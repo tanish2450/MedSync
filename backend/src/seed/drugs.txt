@@ -1,0 +1,123 @@
+# generic|ingredients(;)|classes(;) first = therapeutic group|forms form:strength/strength,...|brands(;)|critical(1)
+Paracetamol|paracetamol|analgesic-antipyretic;analgesic|tablet:500 mg/650 mg,syrup:125 mg/5 mL,injection:150 mg/mL|Dolo;Crocin;Calpol|0
+Aspirin|aspirin|antiplatelet;nsaid;salicylate|tablet:75 mg/150 mg/325 mg|Ecosprin;Disprin|1
+Ibuprofen|ibuprofen|nsaid;analgesic|tablet:200 mg/400 mg/600 mg,suspension:100 mg/5 mL|Brufen;Combiflam|0
+Diclofenac|diclofenac|nsaid;analgesic|tablet:50 mg/100 mg,gel:1%|Voveran;Voltaren|0
+Naproxen|naproxen|nsaid;analgesic|tablet:250 mg/500 mg|Naprosyn|0
+Etoricoxib|etoricoxib|nsaid;cox2-inhibitor|tablet:60 mg/90 mg/120 mg|Nucoxia;Arcoxia|0
+Tramadol|tramadol|opioid;analgesic|tablet:50 mg,capsule:50 mg|Ultracet;Tramazac|0
+Morphine|morphine|opioid;analgesic|tablet:10 mg,injection:10 mg/mL|MST Continus|0
+Codeine|codeine|opioid;analgesic|tablet:15 mg/30 mg|Codeine phosphate|0
+Warfarin|warfarin|anticoagulant;vitamin-k-antagonist|tablet:1 mg/2 mg/3 mg/5 mg|Warf;Coumadin|1
+Rivaroxaban|rivaroxaban|anticoagulant;doac|tablet:10 mg/15 mg/20 mg|Xarelto|1
+Apixaban|apixaban|anticoagulant;doac|tablet:2.5 mg/5 mg|Eliquis|1
+Clopidogrel|clopidogrel|antiplatelet|tablet:75 mg|Plavix;Clopilet|1
+Heparin|heparin|anticoagulant|injection:5000 IU/mL|Hep-Lock|1
+Metformin|metformin|biguanide;antidiabetic|tablet:500 mg/850 mg/1000 mg|Glycomet;Glucophage|0
+Glimepiride|glimepiride|sulfonylurea;antidiabetic|tablet:1 mg/2 mg/3 mg|Amaryl;Glimestar|0
+Gliclazide|gliclazide|sulfonylurea;antidiabetic|tablet:40 mg/80 mg|Diamicron;Reclide|0
+Sitagliptin|sitagliptin|dpp4-inhibitor;antidiabetic|tablet:25 mg/50 mg/100 mg|Januvia;Istavel|0
+Empagliflozin|empagliflozin|sglt2-inhibitor;antidiabetic|tablet:10 mg/25 mg|Jardiance|0
+Insulin glargine|insulin glargine|insulin;antidiabetic|injection:100 IU/mL|Lantus;Basalog|1
+Insulin human regular|insulin human|insulin;antidiabetic|injection:100 IU/mL|Actrapid;Humulin R|1
+Amlodipine|amlodipine|calcium-channel-blocker;antihypertensive|tablet:2.5 mg/5 mg/10 mg|Amlong;Amlokind;Norvasc|0
+Verapamil|verapamil|calcium-channel-blocker;antihypertensive;antiarrhythmic|tablet:40 mg/80 mg/120 mg|Calaptin|0
+Diltiazem|diltiazem|calcium-channel-blocker;antihypertensive|tablet:30 mg/60 mg|Dilzem|0
+Atenolol|atenolol|beta-blocker;antihypertensive|tablet:25 mg/50 mg/100 mg|Tenormin;Aten|0
+Metoprolol|metoprolol|beta-blocker;antihypertensive|tablet:25 mg/50 mg/100 mg|Betaloc;Metolar|0
+Propranolol|propranolol|beta-blocker;antihypertensive|tablet:10 mg/20 mg/40 mg|Inderal|0
+Bisoprolol|bisoprolol|beta-blocker;antihypertensive|tablet:2.5 mg/5 mg/10 mg|Concor|0
+Carvedilol|carvedilol|beta-blocker;antihypertensive|tablet:3.125 mg/6.25 mg/12.5 mg|Carca;Coreg|0
+Enalapril|enalapril|ace-inhibitor;antihypertensive|tablet:2.5 mg/5 mg/10 mg|Envas;Vasotec|0
+Lisinopril|lisinopril|ace-inhibitor;antihypertensive|tablet:2.5 mg/5 mg/10 mg|Listril;Zestril|0
+Ramipril|ramipril|ace-inhibitor;antihypertensive|capsule:1.25 mg/2.5 mg/5 mg|Cardace;Altace|0
+Telmisartan|telmisartan|arb;antihypertensive|tablet:20 mg/40 mg/80 mg|Telma;Micardis|0
+Losartan|losartan|arb;antihypertensive|tablet:25 mg/50 mg/100 mg|Losar;Cozaar|0
+Olmesartan|olmesartan|arb;antihypertensive|tablet:20 mg/40 mg|Olmezest;Benicar|0
+Hydrochlorothiazide|hydrochlorothiazide|thiazide-diuretic;diuretic;antihypertensive|tablet:12.5 mg/25 mg|Aquazide|0
+Furosemide|furosemide|loop-diuretic;diuretic|tablet:20 mg/40 mg,injection:10 mg/mL|Lasix|0
+Spironolactone|spironolactone|potassium-sparing-diuretic;diuretic|tablet:25 mg/50 mg|Aldactone|0
+Potassium chloride|potassium chloride|electrolyte;potassium-supplement|tablet:600 mg,syrup:1.5 g/15 mL|Kcl|0
+Atorvastatin|atorvastatin|statin;lipid-lowering|tablet:10 mg/20 mg/40 mg/80 mg|Atorva;Lipitor|0
+Rosuvastatin|rosuvastatin|statin;lipid-lowering|tablet:5 mg/10 mg/20 mg|Rosuvas;Crestor|0
+Simvastatin|simvastatin|statin;lipid-lowering|tablet:10 mg/20 mg/40 mg|Zocor|0
+Fenofibrate|fenofibrate|fibrate;lipid-lowering|tablet:145 mg/160 mg|Lipicard|0
+Isosorbide mononitrate|isosorbide mononitrate|nitrate;antianginal|tablet:10 mg/20 mg/30 mg|Monotrate;Imdur|0
+Isosorbide dinitrate|isosorbide dinitrate|nitrate;antianginal|tablet:5 mg/10 mg|Sorbitrate|0
+Nitroglycerin|nitroglycerin|nitrate;antianginal|tablet:0.5 mg (sublingual),patch:5 mg/24 h|Nitrocontin;Angispan|1
+Digoxin|digoxin|cardiac-glycoside|tablet:0.25 mg|Lanoxin|1
+Amiodarone|amiodarone|antiarrhythmic|tablet:100 mg/200 mg|Cordarone;Tachyra|1
+Sildenafil|sildenafil|pde5-inhibitor|tablet:25 mg/50 mg/100 mg|Viagra;Manforce|0
+Tadalafil|tadalafil|pde5-inhibitor|tablet:5 mg/10 mg/20 mg|Cialis;Tadacip|0
+Omeprazole|omeprazole|ppi;acid-suppressant|capsule:20 mg/40 mg|Omez;Prilosec|0
+Pantoprazole|pantoprazole|ppi;acid-suppressant|tablet:20 mg/40 mg|Pan;Pantop|0
+Esomeprazole|esomeprazole|ppi;acid-suppressant|tablet:20 mg/40 mg|Nexium;Raciper|0
+Rabeprazole|rabeprazole|ppi;acid-suppressant|tablet:10 mg/20 mg|Razo;Rablet|0
+Famotidine|famotidine|h2-blocker;acid-suppressant|tablet:20 mg/40 mg|Famocid|0
+Ondansetron|ondansetron|antiemetic|tablet:4 mg/8 mg,injection:2 mg/mL|Emeset;Zofran|0
+Domperidone|domperidone|antiemetic;prokinetic|tablet:10 mg|Domstal|0
+Loperamide|loperamide|antidiarrheal|capsule:2 mg|Eldoper|0
+Oral rehydration salts|oral rehydration salts|electrolyte;rehydration|powder:sachet|ORS|0
+Amoxicillin|amoxicillin|penicillin;antibiotic;beta-lactam|capsule:250 mg/500 mg,suspension:125 mg/5 mL|Mox;Amoxil|0
+Amoxicillin + Clavulanic acid|amoxicillin;clavulanic acid|penicillin;antibiotic;beta-lactam|tablet:375 mg/625 mg/1000 mg|Augmentin;Clavam|0
+Cefixime|cefixime|cephalosporin;antibiotic;beta-lactam|tablet:100 mg/200 mg,suspension:100 mg/5 mL|Taxim-O;Zifi|0
+Cefuroxime|cefuroxime|cephalosporin;antibiotic;beta-lactam|tablet:250 mg/500 mg|Zinnat;Ceftum|0
+Ceftriaxone|ceftriaxone|cephalosporin;antibiotic;beta-lactam|injection:250 mg/500 mg/1 g|Monocef;Rocephin|0
+Azithromycin|azithromycin|macrolide;antibiotic|tablet:250 mg/500 mg,suspension:200 mg/5 mL|Azithral;Zithromax|0
+Clarithromycin|clarithromycin|macrolide;antibiotic|tablet:250 mg/500 mg|Klacid;Claribid|0
+Ciprofloxacin|ciprofloxacin|fluoroquinolone;antibiotic|tablet:250 mg/500 mg|Ciplox;Cipro|0
+Levofloxacin|levofloxacin|fluoroquinolone;antibiotic|tablet:250 mg/500 mg/750 mg|Levoflox;Levaquin|0
+Doxycycline|doxycycline|tetracycline;antibiotic|capsule:100 mg|Doxy-1;Vibramycin|0
+Metronidazole|metronidazole|nitroimidazole;antibiotic;antiprotozoal|tablet:200 mg/400 mg/500 mg|Flagyl;Metrogyl|0
+Co-trimoxazole|sulfamethoxazole;trimethoprim|sulfonamide;antibiotic|tablet:480 mg/960 mg|Septran;Bactrim|0
+Nitrofurantoin|nitrofurantoin|nitrofuran;antibiotic|capsule:50 mg/100 mg|Furadantin|0
+Linezolid|linezolid|oxazolidinone;antibiotic|tablet:600 mg|Zyvox;Linospan|0
+Fluconazole|fluconazole|azole-antifungal;antifungal|tablet:50 mg/150 mg/200 mg|Forcan;Diflucan|0
+Acyclovir|acyclovir|antiviral|tablet:200 mg/400 mg/800 mg|Zovirax;Herpex|0
+Cetirizine|cetirizine|antihistamine|tablet:5 mg/10 mg,syrup:5 mg/5 mL|Cetzine;Zyrtec|0
+Levocetirizine|levocetirizine|antihistamine|tablet:5 mg|Xyzal;Levocet|0
+Loratadine|loratadine|antihistamine|tablet:10 mg|Claritin;Lorfast|0
+Montelukast|montelukast|leukotriene-antagonist|tablet:4 mg/5 mg/10 mg|Montair;Singulair|0
+Salbutamol|salbutamol|beta2-agonist;bronchodilator|inhaler:100 mcg/dose,tablet:2 mg/4 mg|Asthalin;Ventolin|0
+Budesonide|budesonide|inhaled-corticosteroid;corticosteroid|inhaler:100 mcg/200 mcg/400 mcg|Budecort;Pulmicort|0
+Theophylline|theophylline|methylxanthine;bronchodilator|tablet:100 mg/200 mg/300 mg|Deriphyllin;Theo-24|1
+Prednisolone|prednisolone|corticosteroid|tablet:5 mg/10 mg/20 mg|Wysolone;Omnacortil|0
+Dexamethasone|dexamethasone|corticosteroid|tablet:0.5 mg/4 mg,injection:4 mg/mL|Decdan;Dexona|0
+Methotrexate|methotrexate|antimetabolite;dmard|tablet:2.5 mg/5 mg/7.5 mg/10 mg|Folitrax;Trexall|1
+Azathioprine|azathioprine|immunosuppressant;thiopurine|tablet:25 mg/50 mg|Imuran;Azoran|1
+Allopurinol|allopurinol|xanthine-oxidase-inhibitor;antigout|tablet:100 mg/300 mg|Zyloric;Zyloprim|0
+Colchicine|colchicine|antigout|tablet:0.5 mg|Colcrys;Zycolchin|0
+Levothyroxine|levothyroxine|thyroid-hormone|tablet:25 mcg/50 mcg/75 mcg/100 mcg|Thyronorm;Eltroxin|0
+Carbimazole|carbimazole|antithyroid|tablet:5 mg/10 mg|Neo-Mercazole|0
+Calcium carbonate|calcium carbonate|calcium-supplement;mineral-supplement|tablet:500 mg|Shelcal;Calcimax|0
+Ferrous sulfate|ferrous sulfate|iron-supplement;mineral-supplement|tablet:200 mg|Fefol;Feosol|0
+Folic acid|folic acid|vitamin|tablet:5 mg|Folvite|0
+Vitamin D3 (cholecalciferol)|cholecalciferol|vitamin|capsule:60000 IU,tablet:1000 IU|Uprise-D3;Calcirol|0
+Vitamin B12 (methylcobalamin)|methylcobalamin|vitamin|tablet:500 mcg/1500 mcg|Mecobalin;Nurokind|0
+Sertraline|sertraline|ssri;antidepressant|tablet:25 mg/50 mg/100 mg|Daxid;Zoloft|0
+Escitalopram|escitalopram|ssri;antidepressant|tablet:5 mg/10 mg/20 mg|Nexito;Lexapro|0
+Fluoxetine|fluoxetine|ssri;antidepressant|capsule:10 mg/20 mg/40 mg|Prozac;Fludac|0
+Paroxetine|paroxetine|ssri;antidepressant|tablet:10 mg/20 mg/25 mg|Paxil;Parotin|0
+Amitriptyline|amitriptyline|tricyclic;antidepressant|tablet:10 mg/25 mg/50 mg|Tryptomer;Elavil|0
+Lithium carbonate|lithium|mood-stabiliser|tablet:300 mg/400 mg|Lithosun;Eskalith|1
+Alprazolam|alprazolam|benzodiazepine;anxiolytic|tablet:0.25 mg/0.5 mg/1 mg|Alprax;Xanax|0
+Diazepam|diazepam|benzodiazepine;anxiolytic|tablet:2 mg/5 mg/10 mg|Calmpose;Valium|0
+Lorazepam|lorazepam|benzodiazepine;anxiolytic|tablet:1 mg/2 mg|Ativan|0
+Clonazepam|clonazepam|benzodiazepine;anticonvulsant|tablet:0.25 mg/0.5 mg/1 mg|Rivotril;Clonotril|0
+Zolpidem|zolpidem|hypnotic|tablet:5 mg/10 mg|Zolfresh;Ambien|0
+Tizanidine|tizanidine|muscle-relaxant|tablet:2 mg/4 mg|Sirdalud;Tizan|0
+Baclofen|baclofen|muscle-relaxant|tablet:10 mg|Lioresal;Baclof|0
+Carbamazepine|carbamazepine|anticonvulsant|tablet:100 mg/200 mg/400 mg|Tegretol;Zen|1
+Phenytoin|phenytoin|anticonvulsant|tablet:50 mg/100 mg|Eptoin;Dilantin|1
+Levetiracetam|levetiracetam|anticonvulsant|tablet:250 mg/500 mg/750 mg|Levipil;Keppra|1
+Sodium valproate|valproate|anticonvulsant|tablet:200 mg/500 mg|Encorate;Depakote|1
+Gabapentin|gabapentin|anticonvulsant;neuropathic-analgesic|capsule:100 mg/300 mg/400 mg|Gabapin;Neurontin|0
+Pregabalin|pregabalin|anticonvulsant;neuropathic-analgesic|capsule:50 mg/75 mg/150 mg|Pregalin;Lyrica|0
+Tamsulosin|tamsulosin|alpha-blocker;bph|capsule:0.2 mg/0.4 mg|Urimax;Flomax|0
+Finasteride|finasteride|5-alpha-reductase-inhibitor;bph|tablet:1 mg/5 mg|Finpro;Proscar|0
+Hyoscine butylbromide|hyoscine butylbromide|antispasmodic|tablet:10 mg|Buscopan|0
+Dicyclomine|dicyclomine|antispasmodic|tablet:10 mg/20 mg|Cyclopam;Bentyl|0
+Lactulose|lactulose|laxative|syrup:10 g/15 mL|Duphalac|0
+Ivermectin|ivermectin|antiparasitic|tablet:3 mg/6 mg/12 mg|Ivecop;Stromectol|0
+Albendazole|albendazole|antiparasitic|tablet:400 mg|Zentel;Alben|0
+Hydroxychloroquine|hydroxychloroquine|antimalarial;dmard|tablet:200 mg/400 mg|HCQS;Plaquenil|0

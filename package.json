@@ -1,0 +1,14 @@
+{
+  "name": "medsync",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": ["backend", "infra", "frontend"],
+  "scripts": {
+    "test": "npm test -w backend",
+    "typecheck": "npm run typecheck -w backend && npm run typecheck -w infra && npm run typecheck -w frontend",
+    "build:frontend": "npm run build -w frontend",
+    "synth": "npm run build:frontend && npm run synth -w infra",
+    "deploy": "npm run build:frontend && npm run deploy -w infra",
+    "seed": "npm run seed -w backend"
+  }
+}
