@@ -7,7 +7,8 @@ import { AdherencePanel, Avatar, Badge, DoctorCard, DoseChecklist, Empty, ErrorB
 import { SlotPicker } from "./Appointments";
 import { EmergencyToggle } from "./Chat";
 import { SpecialtyTiles } from "../specialties";
-import { DoctorBook, DoctorPatient, DoctorReviews, IlloEmpty, PatientMeds } from "../illustrations";
+import { CaregiverCare, DoctorBook, DoctorPatient, DoctorReviews, IlloEmpty, PageBanner, PatientMeds } from "../illustrations";
+import { DirectionsLink, MapEmbed, NearbyCare } from "../maps";
 
 export function PatientHome() {
   const { me } = useAuth(); const nav = useNavigate();
@@ -52,8 +53,9 @@ export function PatientHome() {
           <div className="card"><h2>Your adherence</h2><AdherencePanel patientId={me!.sub} /></div>
           <div className="card"><h2>Next appointment</h2>
             {appts.loading ? <Skeleton lines={2} /> : next ? <div><b>{next.doctorName}</b><div>{fmtDateTime(next.slotStart)}</div><div className="muted">{next.reason ?? "No reason given"}</div>
-              <div className="row gap"><button className="sm" onClick={() => downloadIcs({ title: `Appointment with ${next.doctorName}`, start: next.slotStart, end: next.slotEnd })}>Add to calendar</button><Link to="/appointments">Manage</Link></div></div> : <Empty>No upcoming appointment. <Link to="/find">Find a doctor</Link></Empty>}
+              <div className="row gap"><button className="sm" onClick={() => downloadIcs({ title: `Appointment with ${next.doctorName}`, start: next.slotStart, end: next.slotEnd })}>Add to calendar</button>{(() => { const c = docs.data?.find((x) => x.id === next.doctorId)?.clinic; return c ? <DirectionsLink place={c} /> : null; })()}<Link to="/appointments">Manage</Link></div></div> : <Empty>No upcoming appointment. <Link to="/find">Find a doctor</Link></Empty>}
           </div>
+          <NearbyCare />
         </aside>
       </div>
     </div>
@@ -74,6 +76,7 @@ export function FindDoctors() {
   const specs = useMemo(() => [...new Set((all.data ?? []).map((d) => d.specialty))].sort(), [all.data]);
   const { data, error, loading } = useLoad(() => get<DocT[]>(`/doctors?slots=1&q=${encodeURIComponent(q)}${spec ? `&specialty=${encodeURIComponent(spec)}` : ""}${maxFee ? `&maxFee=${maxFee}` : ""}${lang ? `&language=${encodeURIComponent(lang)}` : ""}`), [q, spec, maxFee, lang]);
   const set = (k: string, v: string) => { const n = new URLSearchParams(sp); v ? n.set(k, v) : n.delete(k); setSp(n); };
+  const [mapId, setMapId] = useState("");
   const list = (data ?? []).map((d) => ({ ...d, nextSlots: d.nextSlots?.filter((s) => inDay(s.start, day)) })).filter((d) => day === "any" || d.nextSlots?.length)
     .sort((a, b) => (a.nextSlots?.[0]?.start ?? "9").localeCompare(b.nextSlots?.[0]?.start ?? "9"));
   return (
@@ -88,7 +91,16 @@ export function FindDoctors() {
         {spec && <button className="sm" onClick={() => set("specialty", "")}>{spec} ✕</button>}
       </div>
       <ErrorBox e={error} />
-      {loading ? <Skeleton lines={6} /> : list.length ? list.map((d) => <DoctorCard key={d.id} d={d} onSlot={(s) => nav(`/doctor/${d.id}?slot=${encodeURIComponent(s)}`)} onOpen={() => nav(`/doctor/${d.id}`)} />) : <IlloEmpty art={<DoctorReviews />} title="No doctors match these filters">Try another day, specialty or fee.</IlloEmpty>}
+      {loading ? <Skeleton lines={6} /> : list.length ? (() => {
+        const shown = list.find((d) => d.id === mapId) ?? list[0];
+        return <div className="find-split">
+          <div>{list.map((d) => <DoctorCard key={d.id} d={d} mapped={d.id === shown.id} onMap={() => setMapId(d.id)} onSlot={(s) => nav(`/doctor/${d.id}?slot=${encodeURIComponent(s)}`)} onOpen={() => nav(`/doctor/${d.id}`)} />)}</div>
+          <aside className="map-aside">
+            <MapEmbed key={shown.id} place={shown.clinic} height={380} title={`Map of ${shown.clinic.name}`} />
+            <div className="map-cap"><b>{shown.name}</b><span className="muted">{shown.clinic.name} · {shown.clinic.address}</span><DirectionsLink place={shown.clinic} label="Get directions" /></div>
+          </aside>
+        </div>;
+      })() : <IlloEmpty art={<DoctorReviews />} title="No doctors match these filters">Try another day, specialty or fee.</IlloEmpty>}
     </div>
   );
 }
@@ -106,13 +118,14 @@ export function DoctorProfile() {
       <div>
         <div className="card"><div className="row" style={{ gap: 16 }}><Avatar name={d.name} /><div><h1>{d.name}</h1><div><b>{d.specialty}</b> · {d.qualifications}</div><span className={`pill ${d.onlineStatus}`}>{d.onlineStatus === "Available" ? "Available now" : d.onlineStatus}</span></div></div></div>
         <div className="grid">
-          <div className="card"><h2>Clinic</h2><b>{d.clinic.name}</b><div>{d.clinic.address}</div><div className="muted">{d.consultationHours}</div></div>
+          <div className="card"><h2>Clinic</h2><b>{d.clinic.name}</b><div>{d.clinic.address}</div><div className="muted">{d.consultationHours}</div>
+            <MapEmbed place={d.clinic} height={200} /><div className="gap"><DirectionsLink place={d.clinic} label="Get directions" /></div></div>
           <div className="card"><h2>Details</h2><div>Consultation fee ₹{d.fee}</div><div>Languages: {d.languages?.join(", ")}</div><div className="muted">Registration no. {d.registrationNo}</div></div>
         </div>
       </div>
       <aside className="sticky card">
         <div className="steps" aria-label="Booking progress">{["Pick a time", "Your details", "Confirmed"].map((s, i) => <div key={s} className={`st ${step === i + 1 ? "on" : step > i + 1 ? "done" : ""}`}>{i + 1}. {s}</div>)}</div>
-        {step === 1 && <><SlotPicker doctorId={d.id} onPick={(s) => setSlot(s)} /><button className="primary gap" disabled={!slot} onClick={() => setStep(2)}>Continue</button></>}
+        {step === 1 && <><SlotPicker doctorId={d.id} onPick={(s) => setSlot(s)} /><button className="primary gap pillcta" disabled={!slot} onClick={() => setStep(2)}>Continue <span aria-hidden>→</span></button></>}
         {step === 2 && <>
           <div className="success">Selected: <b>{fmtDay(slot)}, {fmtTime(slot)}</b> <a href="#" onClick={(e) => { e.preventDefault(); setStep(1); }}>change</a></div>
           <label>Reason for visit</label><input value={reason} onChange={(e) => setReason(e.target.value)} placeholder="e.g. Follow-up, new symptoms" />
@@ -121,6 +134,7 @@ export function DoctorProfile() {
         {step === 3 && done && <div>
           <div className="success"><b>You&apos;re booked!</b></div>
           <p>{d.name}<br />{fmtDateTime(done.slotStart)}<br />{d.clinic.name}</p>
+          <p><DirectionsLink place={d.clinic} label="Directions to the clinic" /></p>
           <p className="muted">The day before, we ask your doctor to confirm. You&apos;ll be notified if they need to reschedule.</p>
           <div className="row"><button onClick={() => downloadIcs({ title: `Appointment with ${d.name}`, start: done.slotStart, end: done.slotEnd, location: `${d.clinic.name}, ${d.clinic.address}` })}>Add to calendar (.ics)</button><button className="brand" onClick={() => nav("/appointments")}>View appointments</button></div></div>}
       </aside>
@@ -169,10 +183,10 @@ export function CaregiverHome() {
   const links = useLoad(() => get<any[]>("/caregivers")); const pts = useLoad(() => get<any[]>("/patients")); const [sel, setSel] = useState("");
   const active = sel || pts.data?.[0]?.id || "";
   return (
-    <div><h1>Linked patients</h1><ErrorBox e={links.error ?? pts.error} />
+    <div><PageBanner title="Linked patients" sub="See today's doses, mark them on their behalf and step in when something is missed." art={<CaregiverCare />} /><ErrorBox e={links.error ?? pts.error} />
       {links.data?.filter((l) => l.status === "Pending").map((l) => (
         <div className="card" key={l.patientId}><b>Invitation</b> to support a patient. <button className="primary sm" onClick={async () => { await post("/caregivers/accept", { patientId: l.patientId }); links.reload(); pts.reload(); }}>Accept</button></div>))}
-      {pts.data && !pts.data.length && <Empty>No active links yet.</Empty>}
+      {pts.data && !pts.data.length && <div className="card"><IlloEmpty art={<CaregiverCare />} title="No linked patients yet">Ask the person you care for to invite you from their Caregivers page.</IlloEmpty></div>}
       {!!pts.data?.length && <>
         <div className="field" style={{ maxWidth: 320 }}><label>Patient</label><select value={active} onChange={(e) => setSel(e.target.value)}>{pts.data.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}</select></div>
         <div className="grid gap"><div className="card"><h2>Today</h2><DoseChecklist patientId={active} canMark /></div><div className="card"><h2>Adherence</h2><AdherencePanel patientId={active} /></div></div>

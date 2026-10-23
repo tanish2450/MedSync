@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { useAuth } from "../auth";
 import { ErrorBox } from "../components";
 import { AuthShell } from "../brand";
 import ProfileForm, { type SignupRole } from "./ProfileForm";
+import { CaregiverCare, DoctorChart, PatientMeds, Pharmacist } from "../illustrations";
 
 export const ROLE_CARDS: { role: SignupRole; title: string; blurb: string }[] = [
   { role: "patient", title: "Patient", blurb: "Track medicines, get reminders, book doctors." },
@@ -10,6 +11,8 @@ export const ROLE_CARDS: { role: SignupRole; title: string; blurb: string }[] = 
   { role: "pharmacy", title: "Pharmacy", blurb: "List your store so patients can find you." },
   { role: "caregiver", title: "Caregiver", blurb: "Help a family member stay on track." },
 ];
+
+const ROLE_ART: Record<SignupRole, ReactNode> = { patient: <PatientMeds />, doctor: <DoctorChart />, pharmacy: <Pharmacist />, caregiver: <CaregiverCare /> };
 
 /** Shown to anyone signed in without a role yet (new email sign-up or Google): pick a role, then fill that role's required details. */
 export function FinishProfile() {
@@ -20,7 +23,7 @@ export function FinishProfile() {
       <h1>Finish setting up your account</h1>
       <p className="muted">Signed in as {me?.email}. Tell us who you are so we can ask for the right details.</p>
       {!role ? <div className="rolecards">{ROLE_CARDS.map((c) => (
-        <button key={c.role} type="button" className="card rolecard" onClick={() => setRole(c.role)}><b>{c.title}</b><span className="muted">{c.blurb}</span></button>))}</div>
+        <button key={c.role} type="button" className="card rolecard" onClick={() => setRole(c.role)}><span className="rc-art">{ROLE_ART[c.role]}</span><b>{c.title}</b><span className="muted">{c.blurb}</span></button>))}</div>
         : <><button className="sm" onClick={() => setRole(null)}>← Change role</button><h2>{ROLE_CARDS.find((c) => c.role === role)!.title} details</h2><ProfileForm role={role} defaultName={me?.name !== me?.email ? me?.name : ""} /></>}
       <button className="sm gap" onClick={logout}>Sign out</button>
     </div></AuthShell>

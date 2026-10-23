@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { get, post } from "../api";
 import { AlertList, Badge, ErrorBox, fmtDateTime, useLoad } from "../components";
+import { DoctorScan, PageBanner } from "../illustrations";
 import { DrugSearch, useAckFlow } from "./Prescribe";
 import { FrequencyPicker, defaultSchedule, type Schedule } from "./FrequencyPicker";
 
@@ -19,7 +20,7 @@ export function DoctorScans() {
     {rows.map((s) => <tr key={s.id}><td>{fmtDateTime(s.createdAt)}</td><td>{s.patientName}</td><td>{s.items.length || <span className="muted">none, enter from photo</span>}</td><td><Badge v={s.status === "Added" ? "Confirmed" : s.status === "Rejected" ? "Missed" : "Pending"} /> {s.status}</td>
       <td><Link to={`/scans/${s.id}`}><button className="sm primary">{s.status === "Pending review" ? "Review" : "View"}</button></Link></td></tr>)}
     {!rows.length && <tr><td colSpan={5} className="muted">None</td></tr>}</tbody></table>;
-  return (<div><h1>Prescription uploads</h1><ErrorBox e={error} />
+  return (<div><PageBanner title="Prescription uploads" sub="Photos patients sent in. Check what was read, then add the medicines to their plan." art={<DoctorScan />} /><ErrorBox e={error} />
     <div className="card"><h2>Waiting for your review ({pending.length})</h2><Table rows={pending} /></div>
     <div className="card"><h2>Reviewed</h2><Table rows={rest} /></div></div>);
 }

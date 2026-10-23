@@ -99,6 +99,113 @@ export const PatientMeds = () => (
   </svg>
 );
 
+const BLUE = "#8FB8F0";
+const Check = ({ x, y }: { x: number; y: number }) => <path d={`M${x - 4} ${y}l3 3 6-7`} stroke={G} strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" fill="none" />;
+const Heart = ({ x, y, s = 1 }: { x: number; y: number; s?: number }) =>
+  <path transform={`translate(${x} ${y}) scale(${s})`} d="M0 10C-11 2-13-5-10-9c3-4 8-3 10 1 2-4 7-5 10-1 3 4 1 11-10 19z" fill={O} stroke={K} strokeWidth={1.4} strokeLinejoin="round" />;
+
+/** Doctor reviewing a patient chart on a clipboard. */
+export const DoctorChart = () => (
+  <svg viewBox="0 0 240 200" aria-hidden="true" className="illo">
+    <Person skin="medium" hair="short" top="coat" inner={G} glasses x={8} y={28} />
+    <rect x="118" y="82" width="80" height="108" rx="6" fill={Y} stroke={K} strokeWidth={1.6} />
+    <rect x="126" y="94" width="64" height="88" rx="2" fill={W} stroke={K} strokeWidth={1.3} />
+    <rect x="144" y="76" width="28" height="13" rx="3" fill={GREY} stroke={K} strokeWidth={1.4} />
+    <path d="M132 120h12l5-11 6 22 5-11h20" stroke={O} strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+    <Check x={136} y={146} /><path d="M146 146h34" {...line} /><Check x={136} y={162} /><path d="M146 162h26" {...line} />
+    <Hand x={120} y={146} skin="medium" />
+  </svg>
+);
+
+/** Doctor beside a calendar with booked days and a clock. */
+export const DoctorCalendar = () => (
+  <svg viewBox="0 0 240 200" aria-hidden="true" className="illo">
+    <Person skin="light" hair="long" top="coat" inner={Y} x={0} y={30} />
+    <rect x="116" y="52" width="108" height="100" rx="8" fill={W} stroke={K} strokeWidth={1.6} />
+    <path d="M116 60a8 8 0 0 1 8-8h92a8 8 0 0 1 8 8v16H116z" fill={G} stroke={K} strokeWidth={1.6} />
+    <path d="M140 46v12M200 46v12" stroke={K} strokeWidth={3} strokeLinecap="round" />
+    {[0, 1, 2, 3].map((c) => [0, 1, 2].map((r) => {
+      const x = 134 + c * 24, y = 92 + r * 20, on = (c + r) % 3 === 0;
+      return on ? <Check key={`${c}${r}`} x={x} y={y} /> : <circle key={`${c}${r}`} cx={x} cy={y} r="3" fill={GREY} />;
+    }))}
+    <circle cx="206" cy="132" r="9" fill={Y} />
+    <circle cx="206" cy="168" r="20" fill={Y} stroke={K} strokeWidth={1.6} /><path d="M206 156v12l8 5" {...line} />
+    <Hand x={118} y={150} skin="light" />
+  </svg>
+);
+
+/** Doctor checking a patient's prescription photo on a phone. */
+export const DoctorScan = () => (
+  <svg viewBox="0 0 240 200" aria-hidden="true" className="illo">
+    <Person skin="light" hair="bun" top="coat" inner={BLUE} x={6} y={28} />
+    <rect x="128" y="88" width="56" height="98" rx="9" fill={K} />
+    <rect x="133" y="98" width="46" height="78" rx="3" fill={W} />
+    <text x="140" y="120" fontSize="15" fontWeight="700" fill={O} fontFamily="Georgia,serif">Rx</text>
+    <path d="M140 132h32M140 142h26M140 152h30M140 162h18" {...line} />
+    <circle cx="196" cy="84" r="16" fill={W} fillOpacity=".7" stroke={K} strokeWidth={2.4} /><path d="M207 96l13 13" stroke={K} strokeWidth={4} strokeLinecap="round" />
+    <Hand x={130} y={150} skin="light" />
+  </svg>
+);
+
+/** Nurse with a checklist board. */
+export const NurseDesk = () => (
+  <svg viewBox="0 0 240 200" aria-hidden="true" className="illo">
+    <Person skin="deep" hair="bun" top="sweater" topColor={BLUE} x={4} y={28} />
+    <path d="M62 116h16M70 108v16" stroke={W} strokeWidth={4} strokeLinecap="round" transform="translate(4 28)" />
+    <rect x="122" y="70" width="96" height="116" rx="8" fill={W} stroke={K} strokeWidth={1.6} />
+    <rect x="122" y="70" width="96" height="20" rx="8" fill={Y} stroke={K} strokeWidth={1.6} />
+    {[108, 130, 152, 174].map((y, i) => <g key={y}><rect x="132" y={y - 7} width="13" height="13" rx="3" fill={W} stroke={K} strokeWidth={1.4} />{i < 3 && <Check x={138} y={y} />}<path d={`M152 ${y}h${i % 2 ? 40 : 54}`} {...line} /></g>)}
+    <Hand x={124} y={142} skin="deep" />
+  </svg>
+);
+
+/** Nurse on a call, confirming tomorrow's appointments. */
+export const NursePhone = () => (
+  <svg viewBox="0 0 240 200" aria-hidden="true" className="illo">
+    <Person skin="light" hair="short" hairColor="#5A2E1C" top="sweater" topColor={BLUE} x={30} y={30} />
+    <rect x="124" y="58" width="14" height="30" rx="4" fill={K} transform="rotate(18 131 73)" />
+    <Hand x={130} y={92} skin="light" r={-20} />
+    <path d="M156 40h56a8 8 0 0 1 8 8v20a8 8 0 0 1-8 8h-40l-12 10v-10h-4a8 8 0 0 1-8-8V48a8 8 0 0 1 8-8z" fill={Y} />
+    <path d="M168 58l6 6 12-12" stroke={K} strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" fill="none" /><path d="M192 58h18" {...line} />
+    <path d="M152 96c6 4 6 12 0 16M160 90c10 8 10 22 0 30" stroke={O} strokeWidth={2.2} strokeLinecap="round" fill="none" />
+  </svg>
+);
+
+/** Caregiver with an arm around an elderly family member. */
+export const CaregiverCare = () => (
+  <svg viewBox="0 0 240 200" aria-hidden="true" className="illo">
+    <Person skin="medium" hair="short" hairColor="#B9BEC6" top="sweater" topColor={Y} glasses x={-4} y={44} s={0.92} />
+    <Person skin="light" hair="long" hairColor="#5A2E1C" top="sweater" topColor={G} x={98} y={30} s={0.95} flip />
+    <path d="M150 136c-20-12-42-14-60-6" stroke={K} strokeWidth={13} strokeLinecap="round" fill="none" />
+    <path d="M150 136c-20-12-42-14-60-6" stroke={G} strokeWidth={10} strokeLinecap="round" fill="none" />
+    <Hand x={88} y={131} skin="light" />
+    <Heart x={118} y={34} s={1.2} /><Heart x={142} y={20} s={0.7} />
+  </svg>
+);
+
+/** Pharmacist at the counter in front of medicine shelves. */
+export const Pharmacist = () => (
+  <svg viewBox="0 0 240 200" aria-hidden="true" className="illo">
+    <path d="M12 58h216M12 104h216" stroke={GREY} strokeWidth={6} strokeLinecap="round" />
+    {[[24, O], [44, Y], [64, G], [174, Y], [194, O], [214, G]].map(([x, c]) => <g key={`a${x}`}><rect x={Number(x) - 7} y="36" width="14" height="20" rx="3" fill={String(c)} stroke={K} strokeWidth={1.2} /><rect x={Number(x) - 5} y="31" width="10" height="6" rx="1.5" fill={W} stroke={K} strokeWidth={1.2} /></g>)}
+    {[[30, G], [52, W], [182, O], [206, W]].map(([x, c]) => <rect key={`b${x}`} x={Number(x) - 9} y="84" width="18" height="18" rx="3" fill={String(c)} stroke={K} strokeWidth={1.2} />)}
+    <Person skin="deep" hair="short" top="coat" inner={G} x={50} y={34} />
+    <rect x="0" y="166" width="240" height="34" fill={Y} stroke={K} strokeWidth={1.6} />
+    <rect x="150" y="138" width="26" height="30" rx="4" fill={O} stroke={K} strokeWidth={1.4} /><rect x="147" y="131" width="32" height="9" rx="2" fill={W} stroke={K} strokeWidth={1.4} />
+    <path d="M60 168v-22h34v22" fill={W} stroke={K} strokeWidth={1.4} /><path d="M70 146c0-8 14-8 14 0" {...line} />
+  </svg>
+);
+
+/** Page header with an illustration on the right; used at the top of each role's main screens. */
+export function PageBanner({ title, sub, art, action }: { title: string; sub?: string; art: ReactNode; action?: ReactNode }) {
+  return (
+    <section className="pbanner">
+      <div className="pb-text"><h1>{title}</h1>{sub && <p className="muted">{sub}</p>}{action && <div className="pb-action">{action}</div>}</div>
+      <div className="pb-art">{art}</div>
+    </section>
+  );
+}
+
 /** Empty state with an illustration on top. */
 export function IlloEmpty({ art, title, children }: { art: ReactNode; title: string; children?: ReactNode }) {
   return <div className="illo-empty">{art}<b>{title}</b>{children && <div className="muted">{children}</div>}</div>;

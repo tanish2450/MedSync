@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { get, post, put } from "../api";
 import { Badge, Empty, ErrorBox, Modal, fmtDateTime, useLoad } from "../components";
+import { DoctorPatient, DoctorReviews, NurseDesk, NursePhone, PageBanner, Pharmacist } from "../illustrations";
 
 export function AdminHome() {
   const pts = useLoad(() => get<any[]>("/patients")); const docs = useLoad(() => get<any[]>("/doctors")); const appts = useLoad(() => get<any[]>("/appointments"));
@@ -9,7 +10,7 @@ export function AdminHome() {
   const today = new Date(Date.now() + 5.5 * 3600_000).toISOString().slice(0, 10);
   const todays = (appts.data ?? []).filter((a) => a.slotStart.startsWith(today) && a.status === "Booked");
   return (
-    <div><h1>Operations overview</h1>
+    <div><PageBanner title="Operations overview" sub="Patients, doctors and today's appointments at a glance." art={<NurseDesk />} />
       <div className="kpis">
         <div className="kpi k-coral"><span className="lbl">Patients</span><span className="n">{pts.data?.length ?? "…"}</span></div>
         <div className="kpi k-mint sq"><span className="lbl">Doctors</span><span className="n">{docs.data?.length ?? "…"}</span></div>
@@ -27,7 +28,7 @@ export function AdminPatients() {
   const [q, setQ] = useState(""); const { data, error, reload } = useLoad(() => get<any[]>(`/patients?q=${encodeURIComponent(q)}`), [q]);
   const [open, setOpen] = useState(false);
   return (
-    <div><div className="row"><h1 className="grow">Patients</h1><button className="primary" onClick={() => setOpen(true)}>Register patient</button></div>
+    <div><PageBanner title="Patients" sub="Register patients and keep their details up to date." art={<DoctorPatient />} action={<button className="primary" onClick={() => setOpen(true)}>Register patient</button>} />
       <input placeholder="Search by name, email or phone" value={q} onChange={(e) => setQ(e.target.value)} /><ErrorBox e={error} />
       <div className="card gap"><table><thead><tr><th>Name</th><th>Phone</th><th>Email</th><th>Doctors</th></tr></thead><tbody>
         {data?.map((p) => <tr key={p.id}><td><Link to={`/patient/${p.id}`}>{p.name}</Link></td><td>{p.phone ?? "—"}</td><td>{p.email}</td><td>{p.assignedDoctors?.length ?? 0}</td></tr>)}</tbody></table></div>
@@ -50,7 +51,7 @@ function RegisterPatient({ onClose, onDone }: { onClose: () => void; onDone: () 
 export function AdminDoctors() {
   const { data, error, reload } = useLoad(() => get<any[]>("/doctors")); const [open, setOpen] = useState(false);
   return (
-    <div><div className="row"><h1 className="grow">Doctors</h1><button className="primary" onClick={() => setOpen(true)}>Onboard doctor</button></div><ErrorBox e={error} />
+    <div><PageBanner title="Doctors" sub="Onboard doctors and manage their clinics and availability." art={<DoctorReviews />} action={<button className="primary" onClick={() => setOpen(true)}>Onboard doctor</button>} /><ErrorBox e={error} />
       <div className="card"><table><thead><tr><th>Name</th><th>Specialty</th><th>Reg. no.</th><th>Clinic</th><th>Fee</th><th>Status</th><th /></tr></thead><tbody>
         {data?.map((d) => <tr key={d.id}><td>{d.name}</td><td>{d.specialty}</td><td>{d.registrationNo}</td><td>{d.clinic?.name}</td><td>₹{d.fee}</td><td><Badge v={d.active ? "Active" : "Expired"} /></td>
           <td><button onClick={async () => { await put(`/doctors/${d.id}`, { active: !d.active }); reload(); }}>{d.active ? "Deactivate" : "Activate"}</button></td></tr>)}</tbody></table></div>
@@ -81,7 +82,7 @@ function OnboardDoctor({ onClose, onDone }: { onClose: () => void; onDone: () =>
 export function AdminPharmacies() {
   const { data, error, reload } = useLoad(() => get<any[]>("/pharmacies")); const [f, setF] = useState<any>({ name: "", address: "", lat: "", lng: "", hours: "", phone: "", staffEmail: "" }); const [err, setErr] = useState<unknown>(null);
   return (
-    <div><h1>Pharmacies</h1><ErrorBox e={error} />
+    <div><PageBanner title="Pharmacies" sub="Partner pharmacies that patients can order from." art={<Pharmacist />} /><ErrorBox e={error} />
       <div className="card"><table><thead><tr><th>Name</th><th>Address</th><th>Hours</th><th>Phone</th></tr></thead><tbody>{data?.map((p) => <tr key={p.id}><td>{p.name}</td><td>{p.address}</td><td>{p.hours}</td><td>{p.phone}</td></tr>)}</tbody></table></div>
       <div className="card"><h2>Add pharmacy</h2><div className="row">{Object.keys(f).map((k) => <div className="field" key={k}><label>{k}</label><input value={f[k]} onChange={(e) => setF({ ...f, [k]: e.target.value })} /></div>)}</div>
         <ErrorBox e={err} /><button className="primary gap" onClick={async () => { try { await post("/pharmacies", { ...f, lat: Number(f.lat), lng: Number(f.lng), staffEmail: f.staffEmail || undefined }); reload(); } catch (e) { setErr(e); } }}>Add</button></div>
@@ -92,8 +93,7 @@ export function AdminPharmacies() {
 export function AdminConfirmations() {
   const { data, error, loading } = useLoad(() => get<any[]>("/confirmations"), [], 15000);
   return (
-    <div><h1>Day-before confirmations</h1>
-      <p className="muted">At 18:00 IST every day the system messages each doctor to confirm tomorrow&apos;s appointments. Unanswered tasks are flagged here for a phone call or reassignment.</p><ErrorBox e={error} />
+    <div><PageBanner title="Day-before confirmations" sub="At 18:00 IST every day each doctor is asked to confirm tomorrow's appointments. Unanswered tasks are flagged here for a phone call or reassignment." art={<NursePhone />} /><ErrorBox e={error} />
       <div className="card"><table><thead><tr><th>Appointment</th><th>Doctor</th><th>Patient</th><th>Status</th><th>Sent</th><th>Delivery</th><th /></tr></thead><tbody>
         {data?.map((t) => <tr key={t.appointmentId}><td>{fmtDateTime(t.slotStart)}</td><td>{t.doctorName}</td><td>{t.patientName}</td><td><Badge v={t.status} /></td><td>{t.sentAt ? fmtDateTime(t.sentAt) : "—"}</td>
           <td className="muted">{Object.entries(t.deliveryStatus ?? {}).map(([c, s]) => `${c}: ${s}`).join(", ") || "—"}</td><td>{t.needsCall && <Badge v="Cancelled" />}{t.needsCall && " Needs a call"}</td></tr>)}

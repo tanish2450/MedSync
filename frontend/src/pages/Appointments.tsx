@@ -2,25 +2,50 @@ import { useState } from "react";
 import { del as _d, get, post } from "../api";
 import { useAuth } from "../auth";
 import { Badge, Empty, ErrorBox, Modal, fmtDateTime, fmtTime, useLoad } from "../components";
-import { DoctorBook, IlloEmpty } from "../illustrations";
+import { DoctorBook, DoctorCalendar, IlloEmpty, PageBanner } from "../illustrations";
 import { Link } from "react-router-dom";
 
 const ymd = (d: Date) => new Date(d.getTime() + 5.5 * 3600_000).toISOString().slice(0, 10);
 void _d; void Empty;
 
-export function SlotPicker({ doctorId, onPick, days = 1 }: { doctorId: string; onPick: (start: string) => void; days?: number }) {
-  const [date, setDate] = useState(ymd(new Date(Date.now() + 86400_000)));
-  const [sel, setSel] = useState("");
-  const { data, error, loading } = useLoad(() => get<{ start: string; end: string }[]>(`/doctors/${doctorId}/slots?date=${date}&days=${days}`), [doctorId, date]);
+const IST = "Asia/Kolkata";
+const istDay = (iso: string) => new Date(iso).toLocaleDateString("en-CA", { timeZone: IST });
+const istHour = (iso: string) => Number(new Date(iso).toLocaleString("en-GB", { hour: "2-digit", hour12: false, timeZone: IST }));
+const addDays = (day: string, n: number) => { const d = new Date(`${day}T00:00:00Z`); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+const dayLabel = (day: string, o: Intl.DateTimeFormatOptions) => new Date(`${day}T00:00:00Z`).toLocaleDateString("en-IN", { ...o, timeZone: "UTC" });
+/** "09:00 AM" style, always in IST. */
+export const pillTime = (iso: string) => new Date(iso).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", timeZone: IST });
+const PARTS = [["Morning", 0, 12], ["Afternoon", 12, 17], ["Evening", 17, 24]] as const;
+
+/** Week strip of days + Morning / Afternoon / Evening time pills. Loads one week of open slots at a time. */
+export function SlotPicker({ doctorId, onPick }: { doctorId: string; onPick: (start: string) => void }) {
+  const today = ymd(new Date());
+  const [week, setWeek] = useState(today); const [day, setDay] = useState(""); const [sel, setSel] = useState("");
+  const { data, error, loading } = useLoad(() => get<{ start: string; end: string }[]>(`/doctors/${doctorId}/slots?date=${week}&days=7`), [doctorId, week]);
+  const days = Array.from({ length: 7 }, (_, i) => addDays(week, i));
+  const byDay: Record<string, { start: string }[]> = {};
+  for (const sl of data ?? []) (byDay[istDay(sl.start)] ??= []).push(sl);
+  const active = day && days.includes(day) ? day : days.find((d) => byDay[d]?.length) ?? days[0];
+  const go = (n: number) => { setWeek(addDays(week, n)); setDay(""); };
+  const slots = byDay[active] ?? [];
   return (
-    <div>
-      <div className="field"><label>Date</label><input type="date" value={date} min={ymd(new Date())} onChange={(e) => { setDate(e.target.value); setSel(""); }} /></div>
-      <ErrorBox e={error} />
-      <div className="slots gap">
-        {loading ? <span className="muted">Loading slots…</span> : data?.length ? data.map((s) => (
-          <button key={s.start} className={`slot${sel === s.start ? " sel" : ""}`} onClick={() => { setSel(s.start); onPick(s.start); }}>{fmtTime(s.start)}</button>
-        )) : <span className="muted">No open slots on this date.</span>}
+    <div className="sp">
+      <div className="sp-head"><b>{dayLabel(active, { month: "long", year: "numeric" })}</b>
+        <div className="sp-nav"><button type="button" className="iconbtn" disabled={week <= today} onClick={() => go(-7)} aria-label="Previous week">‹</button><button type="button" className="iconbtn" onClick={() => go(7)} aria-label="Next week">›</button></div></div>
+      <div className="sp-days" role="listbox" aria-label="Day">
+        {days.map((d) => (
+          <button key={d} type="button" role="option" aria-selected={d === active} className={`sp-day${d === active ? " on" : ""}${!loading && !byDay[d]?.length ? " none" : ""}`} onClick={() => setDay(d)}>
+            <span className="num">{dayLabel(d, { day: "numeric" })}</span><span className="wd">{d === today ? "Today" : dayLabel(d, { weekday: "short" })}</span>
+          </button>))}
       </div>
+      <ErrorBox e={error} />
+      {loading ? <div className="sp-times gap">{[1, 2, 3, 4].map((i) => <span key={i} className="tpill ghost" />)}</div>
+        : !slots.length ? <p className="muted sp-empty">No open times on {dayLabel(active, { weekday: "long" })}. Try another day.</p>
+        : PARTS.map(([name, a, b]) => {
+          const list = slots.filter((x) => { const h = istHour(x.start); return h >= a && h < b; });
+          return list.length ? <div key={name} className="sp-part"><div className="sp-label">{name}</div>
+            <div className="sp-times">{list.map((x) => <button key={x.start} type="button" className={`tpill${sel === x.start ? " on" : ""}`} aria-pressed={sel === x.start} onClick={() => { setSel(x.start); onPick(x.start); }}>{pillTime(x.start)}</button>)}</div></div> : null;
+        })}
     </div>
   );
 }
@@ -51,7 +76,7 @@ export function AppointmentsPage() {
   );
   return (
     <div>
-      <h1>Appointments</h1><ErrorBox e={error ?? err} />
+      <PageBanner title="Appointments" sub={me?.role === "patient" ? "Your upcoming visits, reschedules and history." : "Upcoming visits, confirmations and history."} art={<DoctorCalendar />} /><ErrorBox e={error ?? err} />
       {me?.role === "doctor" && (conf.data ?? []).filter((t) => t.status === "Sent" || t.status === "Pending").length > 0 && (
         <div className="card" style={{ borderColor: "var(--cta)" }}><h2>Please confirm tomorrow&apos;s appointments</h2>
           {(conf.data ?? []).filter((t) => t.status === "Sent" || t.status === "Pending").map((t) => (

@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
+import { DoctorPatient } from "./illustrations";
 
 /** Rounded tile with a capsule-and-pulse mark, tinted by the role accent. */
 export function LogoMark() {
@@ -31,6 +32,7 @@ const P: Record<string, ReactNode> = {
   sun: <><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5" /></>,
   text: <path d="M4 19L9 5l5 14M6 14h6M16 19v-7M16 12c0-2 4-2 4 0v7" />,
   out: <><path d="M10 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h5M15 8l4 4-4 4M19 12H9" /></>,
+  pin: <><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z" /><circle cx="12" cy="9.5" r="2.5" /></>,
   chat: <><path d="M4 5h16v11H9l-5 4z" /><path d="M8 9.5h8M8 12.5h5" /></>,
   alert: <><path d="M12 3l9.5 17h-19z" /><path d="M12 10v4.5M12 17.5v.5" /></>,
 };
@@ -72,8 +74,8 @@ export function AuthShell({ children, wide }: { children: ReactNode; wide?: bool
         </svg>
         <Logo />
         <div className="preview" aria-hidden="true">
+          <DoctorPatient />
           <div className="pc"><i><Icon n="check" /></i><div><b>Metformin 500 mg taken</b><small>8:02 am · on time</small></div></div>
-          <div className="pc"><i><Icon n="bell" /></i><div><b>Atorvastatin in 10 min</b><small>Reminder sent to you and your caregiver</small></div></div>
         </div>
         <div>
           <h2>One plan.<br /><em>Every</em> doctor.<br /><span>Zero</span> missed doses.</h2>

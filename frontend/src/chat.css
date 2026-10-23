@@ -99,3 +99,65 @@ button.spec:hover { background: transparent; border: 0 } button.spec:active:not(
 .illo-empty { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; padding: 18px 12px 22px }
 .illo-empty .illo { max-width: 220px; margin-bottom: 4px; animation: pop .45s var(--ease) both } .illo-empty b { font-size: 16px; font-weight: 600 }
 .convo-empty .illo { width: 240px; max-width: 70%; margin-bottom: 6px; animation: pop .45s var(--ease) both }
+
+/* ---------- Google Maps (keyless embeds + directions links) ---------- */
+.map { position: relative; width: 100%; margin-top: 12px; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); background: var(--surface-3); animation: fade .4s var(--ease) both }
+.map iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0 }
+a.btnlink { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; font-size: 13.5px; color: var(--accent-text); padding: 5px 10px; border-radius: 8px; border: 1px solid var(--accent-100); background: var(--accent-50); text-decoration: none; transition: background-color .15s, border-color .15s }
+a.btnlink:hover { background: var(--accent-100); text-decoration: none; color: var(--accent-600) } a.btnlink .ic { width: 15px; height: 15px }
+button.btnlink { min-height: 0; padding: 5px 10px; font-size: 13.5px; border-radius: 8px; box-shadow: none }
+.maplinks { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px }
+.doc.mapped { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-50), var(--shadow) }
+.find-split { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 20px; align-items: start }
+.map-aside { position: sticky; top: 84px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 0 14px 14px; box-shadow: var(--shadow) }
+.map-cap { display: flex; flex-direction: column; gap: 4px; margin-top: 12px } .map-cap a { align-self: flex-start; margin-top: 4px }
+.shell .map-aside { top: 24px }
+@media (max-width: 1000px) { .find-split { grid-template-columns: 1fr } .map-aside { position: static; order: -1 } }
+.nearby .seg { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 2px }
+.seg button { min-height: 32px; padding: 4px 12px; font-size: 13px; border-radius: 999px; box-shadow: none }
+.seg button.on { background: var(--accent); border-color: var(--accent); color: var(--on-accent) }
+.nearby > small { display: block; margin-top: 8px }
+
+/* ---------- page banners (every role's main screens) ---------- */
+.pbanner { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 230px; align-items: end; gap: 12px; min-height: 150px; margin-bottom: 20px; padding: 22px 24px 0; background: var(--surface); border: 1px solid var(--line); border-radius: 22px; box-shadow: var(--shadow); overflow: hidden; animation: rise .45s var(--ease) both }
+.pbanner::before { content: ""; position: absolute; right: -40px; bottom: -70px; width: 300px; height: 300px; border-radius: 50%; background: color-mix(in srgb, var(--tint) 70%, var(--surface)); z-index: 0 }
+.pb-text { position: relative; z-index: 1; align-self: center; padding-bottom: 22px } .pb-text h1 { margin: 0 0 6px } .pb-text p { margin: 0; max-width: 560px; font-size: 14.5px }
+.pb-action { margin-top: 14px }
+.pb-art { position: relative; z-index: 1; align-self: end } .pb-art .illo { width: 230px; margin-bottom: -2px; animation: rise .6s .1s var(--ease) both }
+@media (max-width: 700px) { .pbanner { grid-template-columns: minmax(0, 1fr) 120px; padding: 18px 16px 0 } .pb-art .illo { width: 130px } .pb-text p { font-size: 13.5px } }
+
+/* sign-in art + sign-up role cards */
+.auth .art .preview .illo { width: 300px; max-width: 100% }
+.auth .art .preview .pc { margin: -18px 0 0 140px; max-width: 280px; animation: float 9s ease-in-out infinite }
+button.rolecard { padding-left: 20px !important; padding-top: 12px !important }
+.rolecard::before, .rolecard::after { display: none }
+.rc-art { display: block; width: 120px; margin-bottom: 2px } .rc-art .illo { transition: transform .35s var(--ease-pop) } .rolecard:hover .rc-art .illo { transform: scale(1.05) rotate(-2deg) }
+
+/* ---------- appointment picker: week strip + time pills ---------- */
+:root { --pick: #7FA35B; --pick-50: #EEF4E6 }
+.sp-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px } .sp-head b { font-size: 16.5px; font-weight: 600 }
+.sp-nav { display: flex; gap: 2px } .sp-nav button { font-size: 22px; line-height: 1; min-width: 34px; min-height: 34px; padding: 0 }
+.sp-days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; margin-bottom: 6px }
+button.sp-day { flex-direction: column; gap: 6px; padding: 2px 0; min-height: 0; border: 0; background: transparent; box-shadow: none; font-weight: 400 }
+button.sp-day:hover { background: transparent; border: 0 }
+.sp-day .num { width: 100%; max-width: 42px; aspect-ratio: 1; height: auto; border-radius: 50%; display: grid; place-items: center; font-size: 15px; font-weight: 600; color: var(--ink); background: var(--surface); border: 1.5px solid var(--line-2); box-shadow: var(--shadow-xs); transition: background-color .2s, border-color .2s, color .2s, transform .25s var(--ease-pop) }
+.sp-day .wd { font-size: 12px; color: var(--muted) }
+.sp-day:hover .num { border-color: var(--accent); transform: translateY(-2px) }
+.sp-day.on .num { background: var(--accent); border-color: var(--accent); color: var(--on-accent); box-shadow: 0 6px 14px -6px color-mix(in srgb, var(--accent) 80%, transparent); transform: scale(1.06) }
+.sp-day.on .wd { color: var(--accent-text); font-weight: 600 }
+.sp-day.none .num { opacity: .45; box-shadow: none } .sp-day.none.on .num { opacity: 1 }
+.sp-part { animation: rise .35s var(--ease) both } .sp-part:nth-child(2) { animation-delay: .04s } .sp-part:nth-child(3) { animation-delay: .08s }
+.sp-label { font-size: 14.5px; font-weight: 600; color: var(--ink); margin: 16px 0 9px }
+.sp-times { display: flex; flex-wrap: wrap; gap: 9px }
+button.tpill { min-height: 0; padding: 9px 16px; border-radius: 999px; border: 1.5px solid var(--line-2); background: var(--surface); color: var(--ink); font-size: 14px; font-weight: 500; font-variant-numeric: tabular-nums; box-shadow: var(--shadow-xs); transition: background-color .18s, border-color .18s, color .18s, transform .2s var(--ease-pop), box-shadow .2s }
+button.tpill:hover { border-color: var(--pick); color: var(--ink); background: var(--pick-50); transform: translateY(-1px) }
+button.tpill.on, button.tpill.on:hover { background: var(--pick); border-color: var(--pick); color: #fff; box-shadow: 0 6px 14px -6px color-mix(in srgb, var(--pick) 80%, transparent); animation: tick .25s var(--ease-pop) }
+button.tpill.more { border-color: transparent; background: var(--accent-50); color: var(--accent-text); font-weight: 600; margin-top: 10px }
+button.tpill.more:hover { background: var(--accent-100); border-color: transparent }
+.tpill.ghost { display: inline-block; width: 92px; height: 38px; border-radius: 999px; background: var(--surface-3); animation: sk 1.3s infinite linear; background-image: linear-gradient(90deg, var(--surface-3) 25%, var(--surface-2) 50%, var(--surface-3) 75%); background-size: 200% 100% }
+.sp-empty { margin: 16px 0 4px; padding: 14px; text-align: center; border: 1px dashed var(--line-2); border-radius: 12px }
+.nslot-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; flex-wrap: wrap }
+.nslot-day { width: 92px; flex: none; font-size: 13px; color: var(--muted); font-weight: 500 }
+.doc .slotsrow .sp-label { margin-top: 0 }
+button.pillcta { border-radius: 999px; padding: 11px 26px; width: auto; min-width: 160px } button.pillcta span { transition: transform .2s var(--ease) } button.pillcta:hover:not(:disabled) span { transform: translateX(4px) }
+@media (max-width: 640px) { .sp-day .num { font-size: 14px } .nslot-day { width: 100% } }

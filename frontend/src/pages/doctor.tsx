@@ -4,12 +4,13 @@ import { get, put } from "../api";
 import { useAuth } from "../auth";
 import { Badge, ErrorBox, useLoad } from "../components";
 import { MessagePatientButton } from "./Chat";
+import { DoctorCalendar, DoctorChart, PageBanner } from "../illustrations";
 
 export function DoctorPatients() {
   const [q, setQ] = useState(""); const { data, error } = useLoad(() => get<any[]>(`/patients?q=${encodeURIComponent(q)}`), [q]);
   const scans = useLoad(() => get<any[]>("/scans"), [], 20000); const waiting = scans.data?.filter((s) => s.status === "Pending review").length ?? 0;
   return (
-    <div><h1>My patients</h1><ErrorBox e={scans.error} />
+    <div><PageBanner title="My patients" sub="Adherence, emergencies and uploads to review, all in one place." art={<DoctorChart />} /><ErrorBox e={scans.error} />
       <div className="kpis">
         <div className="kpi k-mint"><span className="lbl">Patients</span><span className="n">{data?.length ?? "…"}</span></div>
         <div className="kpi k-sun sq"><span className="lbl">Uploads to review</span><span className="n">{waiting}</span></div>
@@ -45,7 +46,7 @@ export function DoctorAvailability() {
   };
   const status = async (s: string) => { await put(`/doctors/${me!.sub}`, { onlineStatus: s }); reload(); };
   return (
-    <div><h1>Availability</h1>
+    <div><PageBanner title="Availability" sub="Set your weekly hours so patients only see times you can see them." art={<DoctorCalendar />} />
       <div className="card"><h2>Status</h2><div className="row">{["Available", "Busy", "Offline"].map((s) => <button key={s} className={data.onlineStatus === s ? "primary" : ""} onClick={() => status(s)}>{s}</button>)}</div></div>
       <div className="card"><h2>Weekly hours (IST)</h2><p className="muted">Comma-separated ranges, e.g. 09:00-13:00, 16:00-19:00. Leave blank for a day off.</p>
         {DAYS.map((d) => <div className="row" key={d}><div style={{ width: 50 }}><b>{d}</b></div><div className="grow"><input value={state.hours[d]} onChange={(e) => setState({ ...state, hours: { ...state.hours, [d]: e.target.value } })} /></div></div>)}

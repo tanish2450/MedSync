@@ -2,6 +2,7 @@ import { Icon } from "./brand";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { ApiError, get, post } from "./api";
+import { DirectionsLink } from "./maps";
 
 export const fmtDateTime = (iso: string) => new Date(iso).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Kolkata" });
 export const fmtTime = (iso: string) => new Date(iso).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit", timeZone: "Asia/Kolkata" });
@@ -138,22 +139,25 @@ export function AdherencePanel({ patientId, days = 7 }: { patientId: string; day
   );
 }
 
-export interface DocT { id: string; name: string; specialty: string; fee: number; languages: string[]; clinic: { name: string; address: string }; onlineStatus: string; qualifications?: string; consultationHours?: string; nextSlots?: { start: string; end: string }[] }
+export interface DocT { id: string; name: string; specialty: string; fee: number; languages: string[]; clinic: { name: string; address: string; lat?: number; lng?: number }; onlineStatus: string; qualifications?: string; consultationHours?: string; nextSlots?: { start: string; end: string }[] }
 /** ZocDoc-style card: identity, status pill, and a row of next-available slot buttons you can click to book. */
-export function DoctorCard({ d, onSlot, onOpen }: { d: DocT; onSlot: (start: string) => void; onOpen: () => void }) {
+export function DoctorCard({ d, onSlot, onOpen, onMap, mapped }: { d: DocT; onSlot: (start: string) => void; onOpen: () => void; onMap?: () => void; mapped?: boolean }) {
   return (
-    <article className="doc">
+    <article className={`doc${mapped ? " mapped" : ""}`}>
       <Avatar name={d.name} />
       <div>
         <div className="row"><a className="name" href="#" onClick={(e) => { e.preventDefault(); onOpen(); }}>{d.name}</a><span className={`pill ${d.onlineStatus}`}>{d.onlineStatus === "Available" ? "Available now" : d.onlineStatus}</span></div>
         <div className="meta"><b>{d.specialty}</b>{d.qualifications ? ` · ${d.qualifications}` : ""}</div>
         <div className="meta">{d.clinic?.name} · {d.clinic?.address}</div>
+        {d.clinic && <div className="maplinks">{onMap && <button type="button" className="btnlink sm" onClick={onMap}>Show on map</button>}<DirectionsLink place={d.clinic} /></div>}
         <div className="muted">₹{d.fee} consultation · {d.languages?.join(", ")}</div>
       </div>
       <div className="slotsrow">
-        {d.nextSlots?.length ? <><div className="muted" style={{ marginBottom: 6 }}>Next available</div><div className="slots">
-          {d.nextSlots.map((s) => <button key={s.start} className="slot" onClick={() => onSlot(s.start)}>{fmtTime(s.start)}<small>{fmtDay(s.start)}</small></button>)}
-          <button className="slot" onClick={onOpen}>More times</button></div></> : <span className="muted">No open slots in the next 7 days. <a href="#" onClick={(e) => { e.preventDefault(); onOpen(); }}>See profile</a></span>}
+        {d.nextSlots?.length ? <><div className="sp-label">Next available</div>
+          {Object.entries(d.nextSlots.reduce<Record<string, { start: string }[]>>((m, s) => { (m[fmtDay(s.start)] ??= []).push(s); return m; }, {})).map(([day, list]) => (
+            <div key={day} className="nslot-row"><span className="nslot-day">{day}</span><div className="sp-times">
+              {list.map((s) => <button key={s.start} type="button" className="tpill" onClick={() => onSlot(s.start)}>{new Date(s.start).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Kolkata" })}</button>)}</div></div>))}
+          <button type="button" className="tpill more" onClick={onOpen}>More times →</button></> : <span className="muted">No open slots in the next 7 days. <a href="#" onClick={(e) => { e.preventDefault(); onOpen(); }}>See profile</a></span>}
       </div>
     </article>
   );

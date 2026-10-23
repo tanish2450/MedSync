@@ -3,6 +3,7 @@ import { get, post } from "../api";
 import { useAuth } from "../auth";
 import { Badge, ErrorBox, fmtDate, fmtDateTime, useLoad } from "../components";
 import { IlloEmpty, PatientMeds } from "../illustrations";
+import { DirectionsLink, MapEmbed, MapsSearchLink } from "../maps";
 
 const km = (a: [number, number], b: [number, number]) => {
   const r = Math.PI / 180, dLat = (b[0] - a[0]) * r, dLng = (b[1] - a[1]) * r;
@@ -76,7 +77,8 @@ function NewOrder({ onPlaced }: { onPlaced: () => void }) {
             <div className="grow"><b>{p.name}</b> {p.verified === false ? <span className="muted">· Unverified</span> : null}<div className="muted">{p.address}{p.hours ? ` · Open ${p.hours}` : ""}{p.phone ? ` · ${p.phone}` : ""}</div></div>
             {p.dist !== null && <span className="muted">{p.dist.toFixed(1)} km</span>}
           </label>))}
-        {pharm.data && !list.length && <p className="muted">No pharmacies are available yet.</p>}</div>
+        {pharm.data && !list.length && <p className="muted">No pharmacies are available yet.</p>}
+        {(() => { const p = list.find((x) => x.id === pharmacyId); return p ? <div className="gap"><MapEmbed key={p.id} place={p} height={220} /><div className="row gap"><DirectionsLink place={p} label="Directions to pharmacy" /><MapsSearchLink query="pharmacy" near={here} label="More pharmacies on Google Maps" /></div></div> : null; })()}</div>
 
       <div className="card gap"><h2>3. Delivery</h2>
         <div className="chips"><button type="button" className={`chip${mode === "Delivery" ? " on" : ""}`} onClick={() => setMode("Delivery")}>Home delivery</button><button type="button" className={`chip${mode === "Pickup" ? " on" : ""}`} onClick={() => setMode("Pickup")}>I will pick it up</button></div>

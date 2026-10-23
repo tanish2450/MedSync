@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { get, post } from "../api";
 import { ErrorBox, fmtDateTime, useLoad } from "../components";
+import { PageBanner, Pharmacist } from "../illustrations";
 import { Stepper } from "./Orders";
+import { DirectionsLink } from "../maps";
 
 const NEXT = (mode: string, s: string): string | null => ({ Accepted: "Packed", Packed: mode === "Delivery" ? "Out for delivery" : "Ready for pickup", "Out for delivery": "Delivered", "Ready for pickup": "Collected" } as Record<string, string>)[s] ?? null;
 
@@ -10,7 +12,7 @@ export function PharmacyOrders() {
   const by = { new: data?.filter((o) => o.status === "Placed") ?? [], active: data?.filter((o) => ["Accepted", "Packed", "Out for delivery", "Ready for pickup"].includes(o.status)) ?? [], done: data?.filter((o) => ["Delivered", "Collected", "Declined", "Cancelled"].includes(o.status)) ?? [] };
   return (
     <div>
-      <h1>Medicine orders</h1><ErrorBox e={error} />
+      <PageBanner title="Medicine orders" sub="New orders land on the left. Move each one along until it is delivered or collected." art={<Pharmacist />} /><ErrorBox e={error} />
       <div className="board">
         {([["new", "New", "c-new"], ["active", "In progress", "c-act"], ["done", "Completed", "c-done"]] as const).map(([t, label, cls]) => (
           <div key={t} className={`col ${cls}`}><h2>{label} <span className="count">{by[t].length}</span></h2>
@@ -32,6 +34,7 @@ function OrderCard({ o, reload }: { o: any; reload: () => void }) {
     <div className="card gap">
       <div className="row" style={{ justifyContent: "space-between" }}><div><b>{o.patientName}</b> <span className="muted">· {o.mode === "Delivery" ? "Home delivery" : "Pickup"} · ordered by {o.placedByName}{o.placedByRole === "caregiver" ? " (caregiver)" : ""}</span></div><span className="muted">{fmtDateTime(o.createdAt)}</span></div>
       <div className="muted">Phone {o.phone}{o.address ? ` · ${o.address}` : ""}{o.note ? ` · Note: ${o.note}` : ""}</div>
+      {o.mode === "Delivery" && o.address && <div className="maplinks"><DirectionsLink place={{ address: o.address }} label="Route to delivery address" /></div>}
       <Stepper o={o} />
       <table><thead><tr><th>Medicine</th><th>Qty</th><th>{o.status === "Placed" ? "Price per unit (₹)" : "Amount"}</th></tr></thead><tbody>
         {o.items.map((i: any) => <tr key={i.itemId}><td><b>{i.drugName}</b> <span className="muted">{i.strength} {i.form} · {i.dose}, {i.frequency}</span></td><td>{i.quantity}</td>
