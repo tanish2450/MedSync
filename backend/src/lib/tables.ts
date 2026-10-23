@@ -33,6 +33,9 @@ export const TABLES = {
   // Medicine orders from patients/caregivers to pharmacies
   Orders: { key: "Orders", pk: "id", gsis: [{ name: "byPatient", pk: "patientId", sk: "createdAt" }, { name: "byPharmacy", pk: "pharmacyId", sk: "createdAt" }] },
   Notifications: { key: "Notifications", pk: "userId", sk: "id" },
+  // Patient <-> doctor / nurse-desk conversations: id=`${patientId}~${doctorId|"nurses"}`; emergency threads sort first
+  ChatThreads: { key: "ChatThreads", pk: "id", gsis: [{ name: "byPatient", pk: "patientId", sk: "lastAt" }, { name: "byStaff", pk: "staffKey", sk: "lastAt" }] },
+  ChatMessages: { key: "ChatMessages", pk: "threadId", sk: "msgKey" },
   ConfirmationTasks: { key: "ConfirmationTasks", pk: "appointmentId", gsis: [{ name: "byDoctor", pk: "doctorId", sk: "slotStart" }] },
   // Append-only audit trail: pk=entity ("patient#<id>"), sk=`${ts}#${uuid}`
   AuditEvents: { key: "AuditEvents", pk: "entity", sk: "eventKey" },

@@ -3,3 +3,4 @@ dist
 cdk.out
 .env
 *.local
+frontend/public/config.json

@@ -1,4 +1,6 @@
+import { Icon } from "./brand";
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { ApiError, get, post } from "./api";
 
 export const fmtDateTime = (iso: string) => new Date(iso).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Kolkata" });
@@ -15,13 +17,15 @@ export const Empty = ({ children }: { children: ReactNode }) => <div className="
 
 export function Modal({ title, onClose, children }: { title: string; onClose: () => void; children: ReactNode }) {
   useEffect(() => { const k = (e: KeyboardEvent) => e.key === "Escape" && onClose(); window.addEventListener("keydown", k); return () => window.removeEventListener("keydown", k); }, [onClose]);
-  return (
+  // portal to <body> so animated/transformed ancestors can't offset the fixed overlay
+  return createPortal(
     <div className="modal-bg" onClick={onClose}>
       <div className="modal" role="dialog" aria-modal="true" aria-label={title} onClick={(e) => e.stopPropagation()}>
         <div className="row"><h2 className="grow">{title}</h2><button className="sm" onClick={onClose}>Close</button></div>
         {children}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
@@ -78,7 +82,7 @@ export function NotificationBell() {
   const toggle = async () => { const next = !open; setOpen(next); if (next && data?.unread) { await post("/notifications/read-all"); setTimeout(reload, 1500); } };
   return (
     <div className="bellwrap" ref={ref}>
-      <button className="bell" onClick={toggle} aria-label={`Notifications, ${data?.unread ?? 0} unread`} aria-expanded={open}>🔔{!!data?.unread && <span className="dot">{data.unread}</span>}</button>
+      <button className="bell iconbtn" onClick={toggle} aria-label={`Notifications, ${data?.unread ?? 0} unread`} aria-expanded={open}><Icon n="bell" />{!!data?.unread && <span className="dot">{data.unread}</span>}</button>
       {open && <div className="drop" role="menu">
         {!data?.items.length ? <Empty>No notifications yet</Empty> : data.items.map((n) => (
           <div key={n.id} className={`n ${n.readAt ? "" : "unread"}`} style={n.payload?.link ? { cursor: "pointer" } : undefined} onClick={() => { if (n.payload?.link) { setOpen(false); window.location.hash = `#${n.payload.link}`; } }}><b>{n.title}</b><div>{n.body}</div><div className="muted">{fmtDateTime(n.createdAt)} · {Object.entries(n.deliveryStatus ?? {}).map(([c, s]) => `${c}: ${s}`).join(", ")}</div></div>

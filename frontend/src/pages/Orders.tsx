@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { get, post } from "../api";
 import { useAuth } from "../auth";
 import { Badge, ErrorBox, fmtDate, fmtDateTime, useLoad } from "../components";
+import { IlloEmpty, PatientMeds } from "../illustrations";
 
 const km = (a: [number, number], b: [number, number]) => {
   const r = Math.PI / 180, dLat = (b[0] - a[0]) * r, dLng = (b[1] - a[1]) * r;
@@ -95,7 +96,7 @@ function MyOrders() {
   const cancel = async (id: string) => { setErr(null); try { await post(`/orders/${id}/cancel`); reload(); } catch (e) { setErr(e); } };
   return (
     <div className="gap"><ErrorBox e={error ?? err} />
-      {data && !data.length && <div className="card"><p className="muted">No orders yet.</p></div>}
+      {data && !data.length && <div className="card"><IlloEmpty art={<PatientMeds />} title="No orders yet">Order refills of your current medicines from a nearby pharmacy.</IlloEmpty></div>}
       {data?.map((o) => (
         <div className="card" key={o.id}>
           <div className="row" style={{ justifyContent: "space-between" }}><div><b>{o.pharmacyName}</b> <span className="muted">· {o.patientName} · {o.mode === "Delivery" ? "Home delivery" : "Pickup"}</span></div><span className="muted">{fmtDateTime(o.createdAt)}</span></div>

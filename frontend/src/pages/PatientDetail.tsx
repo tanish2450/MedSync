@@ -6,6 +6,7 @@ import { AdherencePanel, Badge, DoseChecklist, ErrorBox, fmtDate, fmtDateTime, u
 import { HistoryCard } from "./HistoryCard";
 import { AllergyEditor } from "./AllergyEditor";
 import { DiscontinueDialog, ModifyDialog, Prescribe } from "./Prescribe";
+import { MessagePatientButton } from "./Chat";
 
 export function PatientDetail() {
   const { id } = useParams(); const { me } = useAuth();
@@ -20,7 +21,8 @@ export function PatientDetail() {
   const refresh = () => { rec.reload(); hist.reload(); };
   return (
     <div>
-      <h1>{p.name}</h1>
+      <div className="row" style={{ alignItems: "flex-start" }}><h1 className="grow">{p.name}{p.emergency?.active && <> <span className="sos-tag">Emergency</span></>}</h1>
+        {(isDoctor || isAdmin) && <MessagePatientButton patientId={p.id} />}</div>
       <p className="muted">{[p.gender, p.dob && `DOB ${p.dob}`, p.bloodGroup && `Blood group ${p.bloodGroup}`, p.phone].filter(Boolean).join(" · ")}</p>
       {!isDoctor && <div className="muted">Read-only clinical view{isAdmin ? ": Admin/Nurse accounts cannot change diagnoses or medicines." : "."}</div>}
 

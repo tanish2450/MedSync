@@ -7,6 +7,7 @@ import App from "./App";
 import "./styles.css";
 import "./signup.css";
 import "./scan.css";
+import "./chat.css";
 
 loadConfig()
   .then(() => createRoot(document.getElementById("root")!).render(

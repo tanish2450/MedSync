@@ -52,7 +52,7 @@ export const patientRoutes: Route[] = [
       }
       const term = q.q?.toLowerCase();
       if (term) list = list.filter((p) => [p.name, p.email, p.phone].some((v) => v?.toLowerCase().includes(term)));
-      list = list.sort((a, b) => a.name.localeCompare(b.name));
+      list = list.sort((a, b) => Number(!!b.emergency?.active) - Number(!!a.emergency?.active) || a.name.localeCompare(b.name));
       return Promise.all(list.map(async (p) => {
         const flags: Record<string, unknown> = { allergies: p.allergies?.length ?? 0 };
         if (caller.role === "doctor") { const a = await adherenceFor(p.id, 7); flags.adherence = a.percent; flags.lowAdherence = a.percent !== null && a.due >= 4 && a.percent < 70; }

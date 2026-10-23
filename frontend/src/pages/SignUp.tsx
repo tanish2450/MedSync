@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../auth";
 import { ErrorBox } from "../components";
+import { AuthShell } from "../brand";
 import ProfileForm, { type SignupRole } from "./ProfileForm";
 
 export const ROLE_CARDS: { role: SignupRole; title: string; blurb: string }[] = [
@@ -15,14 +16,14 @@ export function FinishProfile() {
   const { me, logout } = useAuth();
   const [role, setRole] = useState<SignupRole | null>(null);
   return (
-    <div className="page narrow">
+    <AuthShell wide><div className="narrow">
       <h1>Finish setting up your account</h1>
       <p className="muted">Signed in as {me?.email}. Tell us who you are so we can ask for the right details.</p>
       {!role ? <div className="rolecards">{ROLE_CARDS.map((c) => (
         <button key={c.role} type="button" className="card rolecard" onClick={() => setRole(c.role)}><b>{c.title}</b><span className="muted">{c.blurb}</span></button>))}</div>
         : <><button className="sm" onClick={() => setRole(null)}>← Change role</button><h2>{ROLE_CARDS.find((c) => c.role === role)!.title} details</h2><ProfileForm role={role} defaultName={me?.name !== me?.email ? me?.name : ""} /></>}
       <button className="sm gap" onClick={logout}>Sign out</button>
-    </div>
+    </div></AuthShell>
   );
 }
 
@@ -36,7 +37,7 @@ export default function SignUp({ onBack }: { onBack: () => void }) {
   const run = async (fn: () => Promise<void>) => { setBusy(true); setErr(null); try { await fn(); } catch (x: any) { setErr(x?.message ?? x); } finally { setBusy(false); } };
 
   return (
-    <form className="card login" onSubmit={(e) => { e.preventDefault(); run(async () => {
+    <AuthShell><form className="card login" onSubmit={(e) => { e.preventDefault(); run(async () => {
       if (step === "account") {
         if (!strong) throw new Error("Password needs 12+ characters with upper and lower case, a number and a symbol.");
         if (pw !== pw2) throw new Error("Passwords do not match.");
@@ -59,6 +60,6 @@ export default function SignUp({ onBack }: { onBack: () => void }) {
       <ErrorBox e={err} />
       <button className="primary gap" disabled={busy}>{busy ? "Please wait…" : step === "account" ? "Continue" : "Verify and continue"}</button>
       <button type="button" className="sm gap" onClick={onBack}>I already have an account</button>
-    </form>
+    </form></AuthShell>
   );
 }

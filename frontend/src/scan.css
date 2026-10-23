@@ -1,11 +1,1 @@
-.warn{background:#fff7ed;border:1px solid #fdba74;color:#9a3412;padding:8px 12px;border-radius:8px;margin-bottom:8px}
-@media (prefers-color-scheme:dark){.warn{background:#431407;border-color:#9a3412;color:#fed7aa}}
-
-/* ---- orders ---- */
-.stepper{display:flex;flex-wrap:wrap;gap:6px;list-style:none;padding:0;margin:10px 0}
-.stepper li{padding:4px 10px;border-radius:999px;border:1px solid var(--line,#cbd5e1);font-size:13px;color:#64748b}
-.stepper li.done{background:#dcfce7;border-color:#86efac;color:#166534}
-.stepper li.now{background:#0b6bcb;border-color:#0b6bcb;color:#fff;font-weight:600}
-.pick{display:flex;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line,#cbd5e1);border-radius:10px;margin-top:8px;cursor:pointer}
-.pick.on{border-color:#0b6bcb;background:rgba(11,107,203,.08)}
-.pick input{width:auto}
+/* kept for import compatibility; prescription-upload and order styles now live in signup.css */

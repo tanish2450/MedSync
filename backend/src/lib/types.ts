@@ -10,6 +10,8 @@ export interface Patient {
   id: string; name: string; email: string; phone?: string; dob?: string; gender?: string;
   address?: string; bloodGroup?: string; language?: string;
   emergencyContact?: { name: string; phone: string; relation?: string };
+  /** Patient-raised emergency: puts their conversations first and alerts the care team. */
+  emergency?: { active: boolean; since?: string; note?: string; raisedBy?: string; clearedAt?: string; clearedBy?: string };
   assignedDoctors: string[];
   allergies: Allergy[];
   conditions: string[];

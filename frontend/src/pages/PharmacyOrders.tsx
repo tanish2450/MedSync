@@ -7,14 +7,18 @@ const NEXT = (mode: string, s: string): string | null => ({ Accepted: "Packed", 
 
 export function PharmacyOrders() {
   const { data, error, reload } = useLoad(() => get<any[]>("/orders"), [], 15000);
-  const [tab, setTab] = useState<"new" | "active" | "done">("new");
   const by = { new: data?.filter((o) => o.status === "Placed") ?? [], active: data?.filter((o) => ["Accepted", "Packed", "Out for delivery", "Ready for pickup"].includes(o.status)) ?? [], done: data?.filter((o) => ["Delivered", "Collected", "Declined", "Cancelled"].includes(o.status)) ?? [] };
   return (
     <div>
       <h1>Medicine orders</h1><ErrorBox e={error} />
-      <div className="chips">{(["new", "active", "done"] as const).map((t) => <button key={t} className={`chip${tab === t ? " on" : ""}`} onClick={() => setTab(t)}>{{ new: "New", active: "In progress", done: "Completed" }[t]} ({by[t].length})</button>)}</div>
-      {!by[tab].length && <div className="card gap"><p className="muted">Nothing here.</p></div>}
-      {by[tab].map((o) => <OrderCard key={o.id} o={o} reload={reload} />)}
+      <div className="board">
+        {([["new", "New", "c-new"], ["active", "In progress", "c-act"], ["done", "Completed", "c-done"]] as const).map(([t, label, cls]) => (
+          <div key={t} className={`col ${cls}`}><h2>{label} <span className="count">{by[t].length}</span></h2>
+            {!by[t].length && <p className="muted">Nothing here.</p>}
+            {by[t].map((o) => <OrderCard key={o.id} o={o} reload={reload} />)}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

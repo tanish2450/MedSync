@@ -1,0 +1,101 @@
+/* messaging + emergency — colours come from the design tokens in styles.css; red (--bad) is reserved for emergencies */
+
+/* ---------- inbox layout ---------- */
+.chat { display: grid; grid-template-columns: 320px minmax(0, 1fr); height: calc(100vh - 200px); min-height: 480px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; animation: rise .45s var(--ease) both }
+.threads { border-right: 1px solid var(--line); overflow-y: auto; padding: 8px; background: var(--surface-2) }
+.threads .empty { margin: 8px; background: var(--surface) }
+.tgroup { font-size: 11.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); padding: 12px 10px 6px }
+.tgroup.sos { color: var(--bad) }
+button.thread { width: 100%; display: flex; align-items: center; justify-content: flex-start; gap: 12px; text-align: left; padding: 10px; margin: 2px 0; border: 1px solid transparent; border-radius: 12px; background: transparent; box-shadow: none; font-weight: 400; min-height: 0; animation: rise .35s var(--ease) both }
+button.thread:hover { background: var(--surface); border-color: var(--line) }
+button.thread.on { background: var(--surface); border-color: var(--accent-100); box-shadow: var(--shadow) }
+button.thread.sos { background: var(--bad-50); border-color: color-mix(in srgb, var(--bad) 22%, transparent) }
+button.thread.sos .avatar { background: var(--bad); color: #fff; box-shadow: 0 0 0 3px color-mix(in srgb, var(--bad) 20%, transparent); animation: sos-ring 1.6s infinite }
+button.thread.sos.on { border-color: var(--bad) }
+.tmain { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px }
+.trow { display: flex; align-items: center; gap: 8px; justify-content: space-between; min-width: 0 }
+.trow b { font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis } .trow small { color: var(--muted); font-size: 12px; flex: none }
+.tlast { color: var(--muted); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.unread { flex: none; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: var(--accent); color: var(--on-accent); font-size: 11.5px; font-weight: 600; display: grid; place-items: center; animation: tick .3s var(--ease-pop) both }
+.thread.sos .unread { background: var(--bad); color: #fff }
+
+/* ---------- conversation ---------- */
+.convo { display: flex; flex-direction: column; min-width: 0; min-height: 0 }
+.convo-head { display: flex; align-items: center; gap: 12px; padding: 12px 18px; border-bottom: 1px solid var(--line) } .convo-head b { font-weight: 600 } .convo-head .muted { font-size: 12.5px }
+.convo-head .back { display: none }
+.convo-empty { flex: 1; display: grid; place-content: center; justify-items: center; gap: 6px; color: var(--muted); text-align: center; padding: 24px }
+.convo-empty .ic { width: 40px; height: 40px; color: var(--accent); background: var(--accent-50); border-radius: 14px; padding: 9px; margin-bottom: 6px } .convo-empty b { color: var(--ink) }
+.convo-empty.small { flex: 0; padding: 30px 10px }
+.msgs { flex: 1; overflow-y: auto; padding: 18px 20px; display: flex; flex-direction: column; gap: 8px; background: linear-gradient(180deg, var(--surface-2), var(--surface) 160px) }
+.bubble { max-width: min(560px, 78%); align-self: flex-start; padding: 9px 13px 6px; border-radius: 16px 16px 16px 4px; background: var(--surface-3); color: var(--ink); white-space: pre-wrap; word-wrap: break-word; animation: pop .25s var(--ease) both }
+.bubble > small { display: block; text-align: right; font-size: 11px; color: var(--muted); margin-top: 2px } .bubble .who { display: block; font-size: 11.5px; font-weight: 600; color: var(--accent-text); margin-bottom: 2px }
+.bubble.mine { align-self: flex-end; border-radius: 16px 16px 4px 16px; background: var(--accent); color: var(--on-accent) } .bubble.mine > small { color: color-mix(in srgb, var(--on-accent) 75%, transparent) }
+.bubble.sos { box-shadow: inset 0 0 0 2px var(--bad) } .bubble.sos:not(.mine) { background: var(--bad-50) }
+.bubble.mine.sos { background: var(--bad); color: #fff; box-shadow: none }
+.sysmsg { align-self: center; max-width: 86%; text-align: center; font-size: 13px; padding: 6px 14px; border-radius: 999px; background: var(--surface-3); color: var(--ink-2); animation: pop .3s var(--ease) both }
+.sysmsg small { margin-left: 8px; color: var(--muted); font-size: 11px } .sysmsg.sos { background: var(--bad-50); color: var(--bad); font-weight: 600 }
+.sosbar { display: flex; align-items: center; gap: 12px; padding: 10px 18px; background: var(--bad-50); color: var(--bad); border-bottom: 1px solid color-mix(in srgb, var(--bad) 20%, transparent); font-size: 14px; animation: drop .3s var(--ease) both }
+.sosbar button { border-color: color-mix(in srgb, var(--bad) 35%, transparent); color: var(--bad) }
+.sosdot { width: 10px; height: 10px; border-radius: 50%; background: var(--bad); flex: none; animation: sos-ring 1.6s infinite }
+.composer { display: flex; gap: 10px; align-items: flex-end; padding: 12px 14px; border-top: 1px solid var(--line); background: var(--surface) }
+.composer textarea { resize: none; min-height: 44px; max-height: 140px; field-sizing: content }
+.composer button { flex: none }
+@keyframes sos-ring { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--bad) 50%, transparent) } 70% { box-shadow: 0 0 0 8px transparent } 100% { box-shadow: 0 0 0 0 transparent } }
+@media (max-width: 760px) {
+  .chat { grid-template-columns: minmax(0, 1fr); height: calc(100vh - 230px) }
+  .chat.has-open .threads { display: none } .chat:not(.has-open) .convo { display: none }
+  .threads { border-right: 0 } .convo-head .back { display: inline-grid }
+}
+
+/* ---------- patient emergency switch ---------- */
+.sos-card { display: flex; align-items: center; gap: 16px; padding: 16px 20px; margin-bottom: 18px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); transition: background-color .3s var(--ease), border-color .3s var(--ease) }
+.sos-card b { font-weight: 600; font-size: 15.5px } .sos-card .muted { font-size: 13.5px }
+.sos-icon { width: 44px; height: 44px; flex: none; border-radius: 14px; display: grid; place-items: center; background: var(--bad-50); color: var(--bad) } .sos-icon .ic { width: 22px; height: 22px }
+.sos-card.on { background: var(--bad-50); border-color: color-mix(in srgb, var(--bad) 35%, transparent); animation: pop .3s var(--ease) both }
+.sos-card.on .sos-icon { background: var(--bad); color: #fff; animation: sos-ring 1.6s infinite } .sos-card.on b { color: var(--bad) }
+.sos-link { display: inline-block; margin-top: 4px; font-weight: 600; font-size: 14px; color: var(--bad) }
+button.switch { flex: none; position: relative; width: 56px; min-width: 56px; height: 32px; min-height: 32px; padding: 0; border-radius: 999px; border: 0; background: var(--line-2); box-shadow: inset 0 1px 2px rgba(15,23,42,.12); transition: background-color .25s var(--ease) }
+button.switch span { position: absolute; top: 3px; left: 3px; width: 26px; height: 26px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(15,23,42,.25); transition: transform .3s var(--ease-pop) }
+button.switch:hover { background: color-mix(in srgb, var(--line-2) 70%, var(--muted)) }
+button.switch.on { background: var(--bad) } button.switch.on span { transform: translateX(24px) } button.switch.on:hover { background: var(--bad) }
+button.danger-fill { background: var(--bad); border-color: var(--bad); color: #fff } button.danger-fill:hover:not(:disabled) { background: color-mix(in srgb, var(--bad) 85%, #000); border-color: var(--bad) }
+
+/* staff patient lists: emergency rows stand out */
+tr.sos-row td { background: var(--bad-50) } tr.sos-row:hover td { background: color-mix(in srgb, var(--bad) 12%, var(--surface)) }
+.sos-tag { display: inline-flex; align-items: center; gap: 5px; margin-left: 6px; padding: 1px 9px; border-radius: 999px; background: var(--bad); color: #fff !important; font-size: 11.5px; font-weight: 600; text-decoration: none !important; vertical-align: 1px }
+.sos-tag::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #fff; animation: sos-ring 1.6s infinite }
+
+/* row action column: keep the Message button compact and right-aligned */
+td.actions { width: 1%; white-space: nowrap; text-align: right; vertical-align: middle }
+
+/* ---------- specialty tiles (patient home + find a doctor) ---------- */
+.specs { margin: 0 0 28px } .specs h2 { margin-bottom: 14px }
+.spec-row { display: flex; gap: 14px; overflow-x: auto; padding: 4px 2px 10px; margin-bottom: 14px; scrollbar-width: thin; scroll-snap-type: x proximity }
+button.spec { flex: none; width: 112px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 10px; padding: 0; border: 0; background: transparent; box-shadow: none; min-height: 0; font-weight: 400; scroll-snap-align: start; animation: rise .45s var(--ease) both }
+button.spec:hover { background: transparent; border: 0 } button.spec:active:not(:disabled) { transform: none }
+.spec-tile { width: 104px; height: 104px; display: grid; place-items: center; background: var(--surface); border: 1.5px solid var(--line-2); border-radius: 22px; box-shadow: var(--shadow-xs); transition: transform .25s var(--ease), box-shadow .25s var(--ease), border-color .2s }
+.spec-tile svg { width: 70px; height: 70px; transition: transform .35s var(--ease-pop) }
+.spec:hover .spec-tile { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: var(--accent-100) } .spec:hover .spec-tile svg { transform: scale(1.08) rotate(-4deg) }
+.spec.on .spec-tile { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-50), var(--shadow) }
+.spec-name { font-size: 14.5px; line-height: 1.3; color: var(--ink); text-align: center; max-width: 112px }
+.spec.on .spec-name { color: var(--accent-text); font-weight: 600 }
+.spec-row > .spec:nth-child(2) { animation-delay: .04s } .spec-row > .spec:nth-child(3) { animation-delay: .08s } .spec-row > .spec:nth-child(4) { animation-delay: .12s } .spec-row > .spec:nth-child(n+5) { animation-delay: .16s }
+@media (max-width: 640px) { button.spec { width: 92px } .spec-tile { width: 88px; height: 88px; border-radius: 18px } .spec-tile svg { width: 52px; height: 52px } .spec-name { font-size: 13px } }
+
+/* ---------- people illustrations ---------- */
+.illo { display: block; width: 100%; height: auto }
+.hero.has-illo { padding-right: 300px }
+.hero-illo { position: absolute; right: 28px; bottom: 0; width: 280px; z-index: 1; animation: rise .6s .15s var(--ease) both }
+@media (max-width: 1000px) { .hero.has-illo { padding-right: 40px } .hero-illo { display: none } }
+.gets-you { margin: 6px 0 30px; padding: 30px 28px 26px; border-radius: 24px; background: color-mix(in srgb, var(--tint) 35%, var(--surface)); border: 1px solid var(--line) }
+.gets-you h2 { text-align: center; font-size: 22px; margin-bottom: 18px }
+.trio { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px }
+.trio-item { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; padding: 6px 10px 12px; border-radius: 18px; color: var(--ink); transition: background-color .2s, transform .25s var(--ease); animation: rise .5s var(--ease) both }
+.trio-item:nth-child(2) { animation-delay: .08s } .trio-item:nth-child(3) { animation-delay: .16s }
+.trio-item:hover { background: var(--surface); transform: translateY(-3px); text-decoration: none; color: var(--ink) }
+.trio-item .illo { max-width: 240px; margin-bottom: 6px; transition: transform .4s var(--ease-pop) } .trio-item:hover .illo { transform: scale(1.04) }
+.trio-item b { font-size: 16px; font-weight: 600 } .trio-item span { color: var(--muted); font-size: 14px; max-width: 260px }
+@media (max-width: 760px) { .trio { grid-template-columns: 1fr } .trio-item .illo { max-width: 200px } }
+.illo-empty { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; padding: 18px 12px 22px }
+.illo-empty .illo { max-width: 220px; margin-bottom: 4px; animation: pop .45s var(--ease) both } .illo-empty b { font-size: 16px; font-weight: 600 }
+.convo-empty .illo { width: 240px; max-width: 70%; margin-bottom: 6px; animation: pop .45s var(--ease) both }

@@ -3,6 +3,7 @@ import { startGoogleLogin, useAuth } from "../auth";
 import { config } from "../config";
 import { ErrorBox } from "../components";
 import SignUp from "./SignUp";
+import { AuthShell } from "../brand";
 
 export default function Login() {
   const { login } = useAuth();
@@ -21,8 +22,8 @@ export default function Login() {
     } catch (x: any) { setErr(x?.message ?? x); } finally { setBusy(false); }
   };
   return (
-    <form className="card login" onSubmit={submit}>
-      <h1>MedSync</h1><p className="muted">Medication coordination for doctors, patients, caregivers and pharmacies.</p>
+    <AuthShell><form className="card login" onSubmit={submit}>
+      <h1>{challenge ? "Set a new password" : "Welcome back"}</h1><p className="muted">Sign in to MedSync to manage medicines, appointments and refills.</p>
       {!challenge ? <>
         <label>Email</label><input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="username" />
         <label className="gap">Password</label><input type="password" value={pw} onChange={(e) => setPw(e.target.value)} required autoComplete="current-password" />
@@ -34,6 +35,6 @@ export default function Login() {
         {config().googleEnabled && <button type="button" className="gap google" onClick={() => startGoogleLogin()}>Continue with Google</button>}
         <button type="button" className="sm gap" onClick={() => setMode("up")}>New here? Create an account</button>
       </>}
-    </form>
+    </form></AuthShell>
   );
 }

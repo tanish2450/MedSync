@@ -10,11 +10,11 @@ export function AdminHome() {
   const todays = (appts.data ?? []).filter((a) => a.slotStart.startsWith(today) && a.status === "Booked");
   return (
     <div><h1>Operations overview</h1>
-      <div className="grid">
-        <div className="card"><div className="muted">Patients</div><div className="stat">{pts.data?.length ?? "…"}</div></div>
-        <div className="card"><div className="muted">Doctors</div><div className="stat">{docs.data?.length ?? "…"}</div></div>
-        <div className="card"><div className="muted">Appointments today</div><div className="stat">{appts.data ? todays.length : "…"}</div></div>
-        <div className="card"><div className="muted">Pending confirmations</div><div className="stat">{conf.data ? conf.data.filter((t) => t.status === "Pending" || t.status === "Sent").length : "…"}</div></div>
+      <div className="kpis">
+        <div className="kpi k-coral"><span className="lbl">Patients</span><span className="n">{pts.data?.length ?? "…"}</span></div>
+        <div className="kpi k-mint sq"><span className="lbl">Doctors</span><span className="n">{docs.data?.length ?? "…"}</span></div>
+        <div className="kpi k-sun tri"><span className="lbl">Appointments today</span><span className="n">{appts.data ? todays.length : "…"}</span></div>
+        <div className="kpi k-lilac"><span className="lbl">Pending confirmations</span><span className="n">{conf.data ? conf.data.filter((t) => t.status === "Pending" || t.status === "Sent").length : "…"}</span></div>
       </div>
       <div className="card gap"><h2>Patients with low adherence (read-only)</h2>
         {low.data?.length ? <table><tbody>{low.data.map((r) => <tr key={r.patientId}><td><Link to={`/patient/${r.patientId}`}>{r.name}</Link></td><td><Badge v="Missed" /> {r.percent}% over 7 days</td><td className="muted">{r.missed} missed doses</td></tr>)}</tbody></table> : <Empty>No patients below 70% this week.</Empty>}</div>

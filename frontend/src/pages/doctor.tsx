@@ -3,16 +3,24 @@ import { Link } from "react-router-dom";
 import { get, put } from "../api";
 import { useAuth } from "../auth";
 import { Badge, ErrorBox, useLoad } from "../components";
+import { MessagePatientButton } from "./Chat";
 
 export function DoctorPatients() {
   const [q, setQ] = useState(""); const { data, error } = useLoad(() => get<any[]>(`/patients?q=${encodeURIComponent(q)}`), [q]);
   const scans = useLoad(() => get<any[]>("/scans"), [], 20000); const waiting = scans.data?.filter((s) => s.status === "Pending review").length ?? 0;
   return (
-    <div><h1>My patients</h1><ErrorBox e={scans.error} />{waiting > 0 && <div className="card" style={{ borderColor: "var(--cta)" }}><h2>{waiting} prescription upload{waiting === 1 ? "" : "s"} waiting for your review</h2>{scans.data!.filter((s) => s.status === "Pending review").slice(0, 5).map((s) => <div className="row gap" key={s.id} style={{ alignItems: "center" }}><div className="grow"><b>{s.patientName}</b> <span className="muted">{s.items.length ? s.items.map((i: any) => i.drugName ?? i.rawName).join(", ") : "photo only, enter medicines yourself"}</span></div><Link to={`/scans/${s.id}`}><button className="primary sm">Review</button></Link></div>)}<p><Link to="/scans">All uploads</Link></p></div>}<input placeholder="Search" value={q} onChange={(e) => setQ(e.target.value)} /><ErrorBox e={error} />
-      <div className="card gap"><table><thead><tr><th>Patient</th><th>Conditions</th><th>Adherence (7d)</th><th>Flags</th></tr></thead><tbody>
-        {data?.map((p) => <tr key={p.id}><td><Link to={`/patient/${p.id}`}>{p.name}</Link></td><td>{p.conditions?.join(", ") || "—"}</td>
+    <div><h1>My patients</h1><ErrorBox e={scans.error} />
+      <div className="kpis">
+        <div className="kpi k-mint"><span className="lbl">Patients</span><span className="n">{data?.length ?? "…"}</span></div>
+        <div className="kpi k-sun sq"><span className="lbl">Uploads to review</span><span className="n">{waiting}</span></div>
+        <div className="kpi k-ink tri"><span className="lbl">Low adherence</span><span className="n">{data ? data.filter((p) => p.flags?.lowAdherence).length : "…"}</span><small>below 70% this week</small></div>
+      </div>
+      <input placeholder="Search patients" value={q} onChange={(e) => setQ(e.target.value)} style={{ marginBottom: 14 }} />
+      {waiting > 0 && <div className="card" style={{ borderColor: "var(--accent)" }}><h2>{waiting} prescription upload{waiting === 1 ? "" : "s"} waiting for your review</h2>{scans.data!.filter((s) => s.status === "Pending review").slice(0, 5).map((s) => <div className="row gap" key={s.id} style={{ alignItems: "center" }}><div className="grow"><b>{s.patientName}</b> <span className="muted">{s.items.length ? s.items.map((i: any) => i.drugName ?? i.rawName).join(", ") : "photo only, enter medicines yourself"}</span></div><Link to={`/scans/${s.id}`}><button className="primary sm">Review</button></Link></div>)}<p><Link to="/scans">All uploads</Link></p></div>}<ErrorBox e={error} />
+      <div className="card gap"><table><thead><tr><th>Patient</th><th>Conditions</th><th>Adherence (7d)</th><th>Flags</th><th aria-label="Actions" /></tr></thead><tbody>
+        {data?.map((p) => <tr key={p.id} className={p.emergency?.active ? "sos-row" : undefined}><td><Link to={`/patient/${p.id}`}>{p.name}</Link>{p.emergency?.active && <> <Link to="/messages" className="sos-tag">Emergency</Link></>}</td><td>{p.conditions?.join(", ") || "—"}</td>
           <td>{p.flags?.adherence == null ? <span className="muted">—</span> : <><b>{p.flags.adherence}%</b> {p.flags.lowAdherence && <Badge v="Missed" />}</>}</td>
-          <td>{p.flags?.allergies ? <Badge v="Pending" /> : null} {p.flags?.allergies ? `${p.flags.allergies} allergy` : ""}</td></tr>)}
+          <td>{p.flags?.allergies ? <Badge v="Pending" /> : null} {p.flags?.allergies ? `${p.flags.allergies} allergy` : ""}</td><td className="actions"><MessagePatientButton patientId={p.id} small label="Message" /></td></tr>)}
         {data && !data.length && <tr><td colSpan={4} className="muted">No assigned patients yet</td></tr>}</tbody></table></div>
     </div>
   );

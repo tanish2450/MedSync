@@ -5,6 +5,9 @@ import { del, get, post } from "../api";
 import { useAuth } from "../auth";
 import { AdherencePanel, Avatar, Badge, DoctorCard, DoseChecklist, Empty, ErrorBox, Skeleton, downloadIcs, fmtDate, fmtDateTime, fmtDay, fmtTime, useLoad, type DocT } from "../components";
 import { SlotPicker } from "./Appointments";
+import { EmergencyToggle } from "./Chat";
+import { SpecialtyTiles } from "../specialties";
+import { DoctorBook, DoctorPatient, DoctorReviews, IlloEmpty, PatientMeds } from "../illustrations";
 
 export function PatientHome() {
   const { me } = useAuth(); const nav = useNavigate();
@@ -16,16 +19,27 @@ export function PatientHome() {
   const go = (spec?: string) => nav(`/find?q=${encodeURIComponent(q)}&day=${day}${spec ? `&specialty=${encodeURIComponent(spec)}` : ""}`);
   return (
     <div>
-      <section className="hero">
-        <h1>Find the right doctor. Book in seconds. Stay on track with your medicines.</h1>
+      <EmergencyToggle />
+      <section className="hero has-illo">
+        <div className="hero-illo"><PatientMeds /></div>
+        <span className="eyebrow">{new Date().getHours() < 12 ? "Good morning" : new Date().getHours() < 18 ? "Good afternoon" : "Good evening"}, {(me!.name || "").split(" ")[0]}</span>
+        <h1>Stay on track with every medicine.</h1>
         <p>See real open times from verified doctors, and keep every prescription from every doctor in one place.</p>
         <form className="searchbar" onSubmit={(e) => { e.preventDefault(); go(); }} role="search">
           <div><label htmlFor="hq">Doctor or specialty</label><input id="hq" placeholder="e.g. Cardiology, Dr. Rao" value={q} onChange={(e) => setQ(e.target.value)} /></div>
           <div style={{ maxWidth: 190 }}><label htmlFor="hd">When</label><select id="hd" value={day} onChange={(e) => setDay(e.target.value)}><option value="any">Any day</option><option value="today">Today</option><option value="tomorrow">Tomorrow</option><option value="week">This week</option></select></div>
           <button className="primary" type="submit">Find care</button>
         </form>
-        <div className="chips">{specs.map((s) => <a key={s} className="chip" href="#" onClick={(e) => { e.preventDefault(); go(s); }}>{s}</a>)}</div>
-        <div className="trust"><span>✔ Registered doctors</span><span>🔒 Private &amp; encrypted</span><span>📅 Real-time availability</span></div>
+        <div className="trust"><span>Registered doctors</span><span>Private &amp; encrypted</span><span>Real-time availability</span></div>
+      </section>
+      {specs.length > 0 && <section className="specs"><h2>Find care by specialty</h2><SpecialtyTiles specialties={specs} onPick={(s) => go(s)} /></section>}
+      <section className="gets-you">
+        <h2>Let&apos;s get you a doc who gets you</h2>
+        <div className="trio">
+          <Link to="/find" className="trio-item"><DoctorPatient /><b>Doctors who listen</b><span>Every prescription from every doctor, in one shared plan.</span></Link>
+          <Link to="/find" className="trio-item"><DoctorReviews /><b>Verified and trusted</b><span>Registered doctors with real qualifications and clinics.</span></Link>
+          <Link to="/find" className="trio-item"><DoctorBook /><b>Book in a tap</b><span>See real open times and confirm instantly.</span></Link>
+        </div>
       </section>
 
       <div className="split">
@@ -56,6 +70,8 @@ export function FindDoctors() {
   const nav = useNavigate(); const [sp, setSp] = useSearchParams();
   const q = sp.get("q") ?? ""; const spec = sp.get("specialty") ?? ""; const day = sp.get("day") ?? "any";
   const [lang, setLang] = useState(""); const [maxFee, setMaxFee] = useState("");
+  const all = useLoad(() => get<DocT[]>("/doctors"));
+  const specs = useMemo(() => [...new Set((all.data ?? []).map((d) => d.specialty))].sort(), [all.data]);
   const { data, error, loading } = useLoad(() => get<DocT[]>(`/doctors?slots=1&q=${encodeURIComponent(q)}${spec ? `&specialty=${encodeURIComponent(spec)}` : ""}${maxFee ? `&maxFee=${maxFee}` : ""}${lang ? `&language=${encodeURIComponent(lang)}` : ""}`), [q, spec, maxFee, lang]);
   const set = (k: string, v: string) => { const n = new URLSearchParams(sp); v ? n.set(k, v) : n.delete(k); setSp(n); };
   const list = (data ?? []).map((d) => ({ ...d, nextSlots: d.nextSlots?.filter((s) => inDay(s.start, day)) })).filter((d) => day === "any" || d.nextSlots?.length)
@@ -63,6 +79,7 @@ export function FindDoctors() {
   return (
     <div>
       <h1>Find a doctor</h1><p className="muted">Sorted by earliest available time. Times shown in IST.</p>
+      <SpecialtyTiles specialties={specs} active={spec} onPick={(s) => set("specialty", s === spec ? "" : s)} />
       <div className="filters">
         <div className="field"><input aria-label="Search" placeholder="Name, specialty or clinic" value={q} onChange={(e) => set("q", e.target.value)} /></div>
         <select aria-label="When" style={{ maxWidth: 160 }} value={day} onChange={(e) => set("day", e.target.value)}><option value="any">Any day</option><option value="today">Today</option><option value="tomorrow">Tomorrow</option><option value="week">This week</option></select>
@@ -71,7 +88,7 @@ export function FindDoctors() {
         {spec && <button className="sm" onClick={() => set("specialty", "")}>{spec} ✕</button>}
       </div>
       <ErrorBox e={error} />
-      {loading ? <Skeleton lines={6} /> : list.length ? list.map((d) => <DoctorCard key={d.id} d={d} onSlot={(s) => nav(`/doctor/${d.id}?slot=${encodeURIComponent(s)}`)} onOpen={() => nav(`/doctor/${d.id}`)} />) : <Empty>No doctors match these filters.</Empty>}
+      {loading ? <Skeleton lines={6} /> : list.length ? list.map((d) => <DoctorCard key={d.id} d={d} onSlot={(s) => nav(`/doctor/${d.id}?slot=${encodeURIComponent(s)}`)} onOpen={() => nav(`/doctor/${d.id}`)} />) : <IlloEmpty art={<DoctorReviews />} title="No doctors match these filters">Try another day, specialty or fee.</IlloEmpty>}
     </div>
   );
 }

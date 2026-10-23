@@ -2,6 +2,7 @@ import { useState } from "react";
 import { del as _d, get, post } from "../api";
 import { useAuth } from "../auth";
 import { Badge, Empty, ErrorBox, Modal, fmtDateTime, fmtTime, useLoad } from "../components";
+import { DoctorBook, IlloEmpty } from "../illustrations";
 import { Link } from "react-router-dom";
 
 const ymd = (d: Date) => new Date(d.getTime() + 5.5 * 3600_000).toISOString().slice(0, 10);
@@ -58,7 +59,7 @@ export function AppointmentsPage() {
               <button className="primary sm" onClick={() => respond(t.appointmentId, "Confirmed")}>Confirm</button><button className="sm" onClick={() => respond(t.appointmentId, "Reschedule requested")}>Request reschedule</button></div>))}
         </div>)}
       {loading ? <p>Loading…</p> : <>
-        <div className="card"><h2>Upcoming</h2><Table rows={upcoming} actions /></div>
+        <div className="card"><h2>Upcoming</h2>{!loading && !upcoming.length ? <IlloEmpty art={<DoctorBook />} title="No upcoming appointments">{me?.role === "patient" ? <a href="#/find">Find a doctor and book a time</a> : "New bookings will show up here."}</IlloEmpty> : <Table rows={upcoming} actions />}</div>
         <div className="card"><h2>Past &amp; cancelled</h2><Table rows={past} actions={false} /></div></>}
       {resched && (
         <Modal title={`Reschedule ${resched.patientName} with ${resched.doctorName}`} onClose={() => setResched(null)}>
