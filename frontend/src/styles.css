@@ -96,8 +96,9 @@ a { color: var(--accent-text); text-decoration: none; transition: color .15s } a
 
 /* ---------- brand ---------- */
 .logo { font-family: var(--font-display); font-weight: 700; font-size: 18px; letter-spacing: -.02em; display: flex; align-items: center; gap: 10px; color: var(--ink) }
-.logo svg { width: 30px; height: 30px; flex: none; transition: transform .5s var(--ease-pop) } .logo:hover svg { transform: rotate(-12deg) scale(1.06) }
-.logo b { color: var(--accent-text); font-weight: 700 }
+.logo svg { width: 34px; height: 31px; flex: none; transition: transform .5s var(--ease-pop) } .logo:hover svg { transform: rotate(-12deg) scale(1.06) }
+.logo span { color: #3e5172 } .logo b { color: #4fbdf0; font-weight: 700 }
+[data-theme="dark"] .logo span { color: var(--ink) }
 
 /* ---------- shells ---------- */
 .topband { position: absolute; z-index: -1; inset: 0 0 auto 0; height: 300px; background: var(--band); border-radius: 0 0 44px 44px; pointer-events: none; overflow: hidden; animation: fade .5s var(--ease) both }

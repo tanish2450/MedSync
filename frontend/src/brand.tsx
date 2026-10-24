@@ -1,17 +1,27 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useId, useState, type ReactNode } from "react";
 import { DoctorPatient } from "./illustrations";
 
-/** Rounded tile with a capsule-and-pulse mark, tinted by the role accent. */
+/** Heart of overlapping pastel shapes with a white cross: many carers, one record. */
 export function LogoMark() {
+  const clip = `ms-heart-${useId().replace(/:/g, "")}`;
   return (
-    <svg viewBox="0 0 32 32" aria-hidden="true">
-      <rect width="32" height="32" rx="9" fill="var(--accent)" />
-      <rect x="6" y="11" width="20" height="10" rx="5" fill="#fff" opacity=".22" />
-      <path d="M6 16h5l2.2-4.5L17 21l2.4-5H26" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+    <svg viewBox="0 0 64 58" aria-hidden="true">
+      <defs><clipPath id={clip}><circle cx="18" cy="18.5" r="15.5" /><circle cx="46" cy="18.5" r="15.5" /><path d="M3.6 24.5 29 52.2a4 4 0 0 0 6 0L60.4 24.5z" /></clipPath></defs>
+      <g clipPath={`url(#${clip})`}>
+        <rect width="64" height="58" fill="#c4e6fb" />
+        <circle cx="14" cy="19" r="18" fill="#cfaaf8" />
+        <circle cx="50" cy="20" r="18" fill="#fde97f" />
+        <ellipse cx="32" cy="17" rx="15" ry="14" fill="#96d5f8" fillOpacity=".82" />
+        <circle cx="16" cy="42" r="16" fill="#aeecad" fillOpacity=".85" />
+        <circle cx="40" cy="46" r="17" fill="#faadc7" fillOpacity=".88" />
+        <ellipse cx="13" cy="14" rx="3.2" ry="4.4" transform="rotate(-35 13 14)" fill="#fff" />
+        <ellipse cx="50" cy="14" rx="3.2" ry="4.4" transform="rotate(35 50 14)" fill="#fff" />
+      </g>
+      <path d="M27 16h6a2 2 0 0 1 2 2v6h6a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-6v6a2 2 0 0 1-2 2h-6a2 2 0 0 1-2-2v-6h-6a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2h6v-6a2 2 0 0 1 2-2z" fill="#fff" />
     </svg>
   );
 }
-export const Logo = () => <div className="logo"><LogoMark /><span>Med<b>Sync</b></span></div>;
+export const Logo = () => <div className="logo"><LogoMark /><span>Med<b>sync</b></span></div>;
 
 const P: Record<string, ReactNode> = {
   home: <><path d="M3 11l9-8 9 8v10H3z" /><path d="M9 21v-6h6v6" /></>,
