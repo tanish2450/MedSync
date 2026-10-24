@@ -7,7 +7,12 @@ const ROLE_LIST: Role[] = ["admin_nurse", "doctor", "patient", "caregiver", "pha
 /** role is null for a brand-new self sign-up (email or Google) that has not finished its profile yet. */
 export interface Me { sub: string; email: string; name: string; role: Role | null }
 
-const pool = () => new CognitoUserPool({ UserPoolId: config().userPoolId, ClientId: config().clientId });
+// Each tab keeps its own sign-in (sessionStorage). With the shared localStorage default, signing in as another account in
+// a second tab silently swapped the token under the first tab, whose screens then sent requests as the wrong role.
+const storage = window.sessionStorage;
+try { for (const k of Object.keys(localStorage)) if (k.startsWith("CognitoIdentityServiceProvider.")) localStorage.removeItem(k); } catch { /* old shared sessions; storage unavailable */ }
+const pool = () => new CognitoUserPool({ UserPoolId: config().userPoolId, ClientId: config().clientId, Storage: storage });
+const cognitoUser = (email: string) => new CognitoUser({ Username: email, Pool: pool(), Storage: storage });
 
 export function getIdToken(): Promise<string | null> {
   return new Promise((resolve) => {
@@ -50,11 +55,11 @@ async function finishGoogleLoginIfReturning(): Promise<string | null> {
   const claims = JSON.parse(atob(t.id_token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")));
   const p = `CognitoIdentityServiceProvider.${config().clientId}`;
   const u = claims["cognito:username"];
-  localStorage.setItem(`${p}.LastAuthUser`, u);
-  localStorage.setItem(`${p}.${u}.idToken`, t.id_token);
-  localStorage.setItem(`${p}.${u}.accessToken`, t.access_token);
-  localStorage.setItem(`${p}.${u}.refreshToken`, t.refresh_token);
-  localStorage.setItem(`${p}.${u}.clockDrift`, "0");
+  storage.setItem(`${p}.LastAuthUser`, u);
+  storage.setItem(`${p}.${u}.idToken`, t.id_token);
+  storage.setItem(`${p}.${u}.accessToken`, t.access_token);
+  storage.setItem(`${p}.${u}.refreshToken`, t.refresh_token);
+  storage.setItem(`${p}.${u}.clockDrift`, "0");
   return t.id_token as string;
 }
 
@@ -85,7 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = (email: string, password: string) => new Promise<LoginResult>((resolve, reject) => {
-    const user = new CognitoUser({ Username: email, Pool: pool() });
+    const user = cognitoUser(email);
     const finish = (s: CognitoUserSession) => { setMe(decode(s.getIdToken().getJwtToken())); };
     user.authenticateUser(new AuthenticationDetails({ Username: email, Password: password }), {
       onSuccess: (s) => { try { finish(s); resolve({ ok: true }); } catch (e) { reject(e); } },
@@ -103,9 +108,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signUp = (email: string, password: string, name: string) => new Promise<void>((res, rej) =>
     pool().signUp(email, password, [new CognitoUserAttribute({ Name: "email", Value: email }), new CognitoUserAttribute({ Name: "name", Value: name })], [], (e) => (e ? rej(e) : res())));
   const confirmSignUp = (email: string, code: string) => new Promise<void>((res, rej) =>
-    new CognitoUser({ Username: email, Pool: pool() }).confirmRegistration(code.trim(), true, (e) => (e ? rej(e) : res())));
+    cognitoUser(email).confirmRegistration(code.trim(), true, (e) => (e ? rej(e) : res())));
   const resendCode = (email: string) => new Promise<void>((res, rej) =>
-    new CognitoUser({ Username: email, Pool: pool() }).resendConfirmationCode((e) => (e ? rej(e) : res())));
+    cognitoUser(email).resendConfirmationCode((e) => (e ? rej(e) : res())));
   const refresh = () => new Promise<void>((res, rej) => {
     const u = pool().getCurrentUser();
     if (!u) return rej(new Error("Not signed in"));
