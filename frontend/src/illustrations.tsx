@@ -196,6 +196,37 @@ export const Pharmacist = () => (
   </svg>
 );
 
+/** Lab technician at a microscope with a rack of test tubes. */
+export const LabTech = () => (
+  <svg viewBox="0 0 240 200" aria-hidden="true" className="illo">
+    <Person skin="medium" hair="bun" top="coat" inner={BLUE} glasses x={0} y={30} />
+    <rect x="112" y="176" width="128" height="24" fill={Y} stroke={K} strokeWidth={1.6} />
+    <path d="M150 176h40M170 176v-20" stroke={K} strokeWidth={4} strokeLinecap="round" />
+    <path d="M160 150l22-50 12 6-22 50z" fill={W} stroke={K} strokeWidth={1.6} strokeLinejoin="round" />
+    <rect x="180" y="88" width="16" height="22" rx="3" fill={K} transform="rotate(25 188 99)" />
+    <path d="M152 156h36" stroke={K} strokeWidth={3} strokeLinecap="round" />
+    <rect x="200" y="140" width="34" height="8" rx="2" fill={GREY} stroke={K} strokeWidth={1.2} />
+    {[[206, O], [216, G], [226, Y]].map(([x, c]) => <g key={String(x)}><path d={`M${Number(x) - 4} 116v26a4 4 0 0 0 8 0v-26`} fill={W} stroke={K} strokeWidth={1.3} /><path d={`M${Number(x) - 4} 130v12a4 4 0 0 0 8 0v-12z`} fill={String(c)} /></g>)}
+    <Hand x={150} y={150} skin="medium" />
+  </svg>
+);
+
+/** Patient reading a lab report with a checked result and a flagged one. */
+export const LabReport = () => (
+  <svg viewBox="0 0 240 200" aria-hidden="true" className="illo">
+    <Person skin="deep" hair="short" top="sweater" topColor={G} x={2} y={30} />
+    <g transform="rotate(4 170 130)">
+      <rect x="120" y="66" width="92" height="120" rx="6" fill={W} stroke={K} strokeWidth={1.6} />
+      <rect x="120" y="66" width="92" height="22" rx="6" fill={BLUE} stroke={K} strokeWidth={1.6} />
+      <path d="M130 104h40M130 122h48M130 140h36M130 158h44" {...line} />
+      <Check x={196} y={104} /><Check x={196} y={140} />
+      <circle cx="196" cy="122" r="6" fill={O} /><path d="M196 119v3.5M196 125v.5" stroke={W} strokeWidth={2} strokeLinecap="round" />
+      <Check x={196} y={158} />
+    </g>
+    <Hand x={122} y={150} skin="deep" />
+  </svg>
+);
+
 /** Page header with an illustration on the right; used at the top of each role's main screens. */
 export function PageBanner({ title, sub, art, action }: { title: string; sub?: string; art: ReactNode; action?: ReactNode }) {
   return (

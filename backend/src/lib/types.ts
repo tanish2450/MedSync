@@ -1,5 +1,5 @@
-export type Role = "admin_nurse" | "doctor" | "patient" | "caregiver" | "pharmacy";
-export const ROLES: Role[] = ["admin_nurse", "doctor", "patient", "caregiver", "pharmacy"];
+export type Role = "admin_nurse" | "doctor" | "patient" | "caregiver" | "pharmacy" | "lab";
+export const ROLES: Role[] = ["admin_nurse", "doctor", "patient", "caregiver", "pharmacy", "lab"];
 
 export type Severity = "Minor" | "Moderate" | "Major" | "Contraindicated";
 export type MedStatus = "Active" | "Modified" | "Discontinued" | "Completed";

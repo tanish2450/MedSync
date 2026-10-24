@@ -3,16 +3,17 @@ import { useAuth } from "../auth";
 import { ErrorBox } from "../components";
 import { AuthShell } from "../brand";
 import ProfileForm, { type SignupRole } from "./ProfileForm";
-import { CaregiverCare, DoctorChart, PatientMeds, Pharmacist } from "../illustrations";
+import { CaregiverCare, DoctorChart, LabTech, PatientMeds, Pharmacist } from "../illustrations";
 
 export const ROLE_CARDS: { role: SignupRole; title: string; blurb: string }[] = [
   { role: "patient", title: "Patient", blurb: "Track medicines, get reminders, book doctors." },
   { role: "doctor", title: "Doctor", blurb: "Prescribe safely and follow your patients' adherence." },
   { role: "pharmacy", title: "Pharmacy", blurb: "List your store so patients can find you." },
   { role: "caregiver", title: "Caregiver", blurb: "Help a family member stay on track." },
+  { role: "lab", title: "Diagnostic lab", blurb: "Receive test orders and send reports to doctors." },
 ];
 
-const ROLE_ART: Record<SignupRole, ReactNode> = { patient: <PatientMeds />, doctor: <DoctorChart />, pharmacy: <Pharmacist />, caregiver: <CaregiverCare /> };
+const ROLE_ART: Record<SignupRole, ReactNode> = { patient: <PatientMeds />, doctor: <DoctorChart />, pharmacy: <Pharmacist />, caregiver: <CaregiverCare />, lab: <LabTech /> };
 
 /** Shown to anyone signed in without a role yet (new email sign-up or Google): pick a role, then fill that role's required details. */
 export function FinishProfile() {

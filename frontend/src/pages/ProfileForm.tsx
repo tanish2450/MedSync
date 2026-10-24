@@ -3,14 +3,15 @@ import { useAuth } from "../auth";
 import { post, ApiError } from "../api";
 import { ErrorBox } from "../components";
 
-export type SignupRole = "patient" | "doctor" | "pharmacy" | "caregiver";
+export type SignupRole = "patient" | "doctor" | "pharmacy" | "caregiver" | "lab";
 const GENDERS = ["Female", "Male", "Non-binary", "Prefer not to say"];
 const LANGUAGES = ["English", "Hindi", "Kannada", "Tamil", "Telugu", "Malayalam", "Marathi", "Bengali"];
 const BLOODS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-", "Unknown"];
 const RELATIONS = ["Spouse", "Parent", "Child", "Sibling", "Relative", "Friend", "Other"];
 const SPECIALTIES = ["General Medicine", "Cardiology", "Diabetology", "Endocrinology", "Neurology", "Psychiatry", "Pulmonology", "Gastroenterology", "Orthopaedics", "Dermatology", "Paediatrics", "Gynaecology", "ENT", "Ophthalmology", "Nephrology", "Oncology", "Other"];
 
-type F = { k: string; label: string; type?: "text" | "tel" | "date" | "number" | "select" | "textarea" | "multi"; options?: string[]; hint?: string; optional?: boolean; full?: boolean };
+type F = { k: string; label: string; type?: "text" | "tel" | "date" | "number" | "select" | "textarea" | "multi" | "check"; options?: string[]; optionLabels?: Record<string, string>; hint?: string; optional?: boolean; full?: boolean };
+const LAB_TESTS: Record<string, string> = { CBC: "Complete blood count", FBS: "Fasting blood sugar", HBA1C: "HbA1c", LIPID: "Lipid profile", KFT: "Kidney function", LFT: "Liver function", TFT: "Thyroid profile", INR: "PT / INR", VITD: "Vitamin D", URINE: "Urine routine" };
 const PHONE_HINT = "Include country code, e.g. +919876543210";
 
 const FIELDS: Record<SignupRole, { title: string; fields: F[] }[]> = {
@@ -53,6 +54,17 @@ const FIELDS: Record<SignupRole, { title: string; fields: F[] }[]> = {
       { k: "pharmacyPhone", label: "Pharmacy phone", type: "tel", hint: PHONE_HINT }, { k: "hours", label: "Opening hours", hint: "e.g. 08:00-22:00" }, { k: "city", label: "City" },
       { k: "address", label: "Address", type: "textarea", full: true },
       { k: "pharmacistName", label: "Registered pharmacist name" }, { k: "pharmacistRegNo", label: "Pharmacist registration number" },
+      { k: "lat", label: "Latitude", type: "number", hint: "Use the location button below" }, { k: "lng", label: "Longitude", type: "number" },
+    ] },
+  ],
+  lab: [
+    { title: "Your details", fields: [{ k: "name", label: "Your full name" }, { k: "phone", label: "Your mobile number", type: "tel", hint: PHONE_HINT }] },
+    { title: "Lab", fields: [
+      { k: "labName", label: "Lab name" }, { k: "licenceNo", label: "Lab registration / licence number" }, { k: "accreditation", label: "Accreditation (e.g. NABL number)", optional: true },
+      { k: "labPhone", label: "Lab phone", type: "tel", hint: PHONE_HINT }, { k: "hours", label: "Opening hours", hint: "e.g. 07:00-21:00" }, { k: "city", label: "City" },
+      { k: "address", label: "Address", type: "textarea", full: true },
+      { k: "tests", label: "Tests you offer", type: "multi", options: Object.keys(LAB_TESTS), optionLabels: LAB_TESTS, full: true },
+      { k: "homeCollection", label: "We offer home sample collection", type: "check", full: true, optional: true },
       { k: "lat", label: "Latitude", type: "number", hint: "Use the location button below" }, { k: "lng", label: "Longitude", type: "number" },
     ] },
   ],
@@ -122,8 +134,10 @@ export default function ProfileForm({ role, defaultName }: { role: SignupRole; d
         ) : f.type === "multi" ? (
           <div className="chips">{f.options!.map((o) => {
             const on = (v[f.k] ?? []).includes(o);
-            return <button type="button" key={o} className={`chip${on ? " on" : ""}`} aria-pressed={on} onClick={() => set(f.k, on ? v[f.k].filter((x: string) => x !== o) : [...(v[f.k] ?? []), o])}>{o}</button>;
+            return <button type="button" key={o} className={`chip${on ? " on" : ""}`} aria-pressed={on} onClick={() => set(f.k, on ? v[f.k].filter((x: string) => x !== o) : [...(v[f.k] ?? []), o])}>{f.optionLabels?.[o] ?? o}</button>;
           })}</div>
+        ) : f.type === "check" ? (
+          <label className="check" style={{ margin: 0 }}><input id={`f-${f.k}`} type="checkbox" checked={!!v[f.k]} onChange={(e) => set(f.k, e.target.checked)} /> Yes</label>
         ) : (
           <input id={`f-${f.k}`} type={f.type ?? "text"} value={val} required={!f.optional} step={f.type === "number" ? "any" : undefined}
             max={f.type === "date" ? new Date().toISOString().slice(0, 10) : undefined}
@@ -136,9 +150,9 @@ export default function ProfileForm({ role, defaultName }: { role: SignupRole; d
   return (
     <form className="card signup" onSubmit={submit}>
       {sections.map((s) => <fieldset key={s.title}><legend>{s.title}</legend><div className="grid2">{s.fields.map(render)}</div></fieldset>)}
-      {(role === "doctor" || role === "pharmacy") && <div className="row" style={{ gap: 10 }}><button type="button" className="sm" onClick={locate}>Use my current location</button><small className="muted">{locMsg}</small></div>}
+      {(role === "doctor" || role === "pharmacy" || role === "lab") && <div className="row" style={{ gap: 10 }}><button type="button" className="sm" onClick={locate}>Use my current location</button><small className="muted">{locMsg}</small></div>}
       {isMinor && <p className="muted">You are under 18, so a parent or guardian must be listed. They will be your point of contact for medication reminders.</p>}
-      {(role === "doctor" || role === "pharmacy") && <p className="muted">Your account is active straight away and shown to patients as <b>Unverified</b> until a MedSync admin checks your registration details.</p>}
+      {(role === "doctor" || role === "pharmacy" || role === "lab") && <p className="muted">Your account is active straight away and shown to patients as <b>Unverified</b> until a MedSync admin checks your registration details.</p>}
       <label className="check"><input type="checkbox" checked={!!v.consent} onChange={(e) => set("consent", e.target.checked)} /> I confirm these details are accurate and I consent to MedSync processing my health information to provide this service.</label>
       {fieldErr.consent && <small className="err">{fieldErr.consent}</small>}
       <ErrorBox e={err} />

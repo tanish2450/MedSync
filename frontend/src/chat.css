@@ -161,3 +161,27 @@ button.tpill.more:hover { background: var(--accent-100); border-color: transpare
 .doc .slotsrow .sp-label { margin-top: 0 }
 button.pillcta { border-radius: 999px; padding: 11px 26px; width: auto; min-width: 160px } button.pillcta span { transition: transform .2s var(--ease) } button.pillcta:hover:not(:disabled) span { transform: translateX(4px) }
 @media (max-width: 640px) { .sp-day .num { font-size: 14px } .nslot-day { width: 100% } }
+
+/* ---------- labs ---------- */
+:root[data-role="lab"] { --tint: #d4f1f4; --accent: #0e7490; --accent-600: #0b5f75; --accent-text: #0c6680 }
+.flag { display: inline-flex; align-items: center; padding: 2px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; background: var(--surface-3); color: var(--ink-2) }
+.f-Normal { background: var(--ok-50); color: var(--ok) } .f-Reported { background: var(--surface-3); color: var(--ink-2) }
+.f-Low, .f-High { background: var(--warn-50); color: var(--warn) }
+.f-Critical-low, .f-Critical-high { background: var(--bad); color: #fff }
+details.labcard { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; margin-bottom: 10px; box-shadow: var(--shadow-xs); transition: box-shadow .2s, border-color .2s; animation: rise .35s var(--ease) both }
+details.labcard[open] { box-shadow: var(--shadow) } details.labcard.urgent { border-left: 4px solid var(--bad) } details.labcard.critical { border-color: color-mix(in srgb, var(--bad) 45%, transparent) }
+details.labcard > summary { list-style: none; display: flex; align-items: center; gap: 10px; padding: 12px 14px; cursor: pointer; flex-wrap: wrap }
+details.labcard > summary::-webkit-details-marker { display: none }
+details.labcard > summary::after { content: "›"; font-size: 20px; color: var(--muted); transition: transform .2s var(--ease) } details.labcard[open] > summary::after { transform: rotate(90deg) }
+.lc-title { font-weight: 600 } .lc-body { padding: 0 14px 14px; border-top: 1px dashed var(--line); animation: fade .25s ease both }
+.lab-results { margin-top: 10px } .lr-test { font-weight: 600; margin: 12px 0 4px }
+.lab-results table td, .lab-results table th { padding: 8px 10px }
+tr.lr-Critical-low td, tr.lr-Critical-high td { background: var(--bad-50) } tr.lr-Low td, tr.lr-High td { background: color-mix(in srgb, var(--warn-50) 70%, transparent) }
+.testgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 10px } @media (max-width: 640px) { .testgrid { grid-template-columns: 1fr } }
+.chooselab { width: 100%; margin-top: 8px; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-2) }
+.card.labjob.urgent { border-left: 4px solid var(--bad) }
+fieldset.resfs { border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px 6px; margin: 0 0 12px } fieldset.resfs legend { font-weight: 600; padding: 0 6px }
+.resrow { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) 70px 70px 104px; gap: 8px; align-items: center; margin-bottom: 8px }
+.resrow input { min-height: 38px; padding: 7px 10px } .resrow .rn { font-size: 14px }
+@media (max-width: 640px) { .resrow { grid-template-columns: 1fr 1fr } }
+.lab-results table { table-layout: fixed } .lab-results th:first-child { width: 34% }

@@ -1,6 +1,6 @@
 import { badRequest } from "../lib/http.js";
 
-export const SIGNUP_ROLES = ["patient", "doctor", "pharmacy", "caregiver"] as const;
+export const SIGNUP_ROLES = ["patient", "doctor", "pharmacy", "caregiver", "lab"] as const;
 export type SignupRole = (typeof SIGNUP_ROLES)[number];
 export const GENDERS = ["Female", "Male", "Non-binary", "Prefer not to say"];
 export const LANGUAGES = ["English", "Hindi", "Kannada", "Tamil", "Telugu", "Malayalam", "Marathi", "Bengali"];

@@ -12,9 +12,10 @@ import { profileRoutes } from "./routes/profile.js";
 import { scanRoutes } from "./routes/scans.js";
 import { orderRoutes } from "./routes/orders.js";
 import { chatRoutes } from "./routes/chat.js";
+import { labRoutes } from "./routes/labs.js";
 import { signupComplete } from "./signup.js";
 
-const routes: Route[] = [...patientRoutes, ...medRoutes, ...schedulingRoutes, ...adminRoutes, ...doseRoutes, ...notificationRoutes, ...profileRoutes, ...scanRoutes, ...orderRoutes, ...chatRoutes];
+const routes: Route[] = [...patientRoutes, ...medRoutes, ...schedulingRoutes, ...adminRoutes, ...doseRoutes, ...notificationRoutes, ...profileRoutes, ...scanRoutes, ...orderRoutes, ...chatRoutes, ...labRoutes];
 
 /** Single API Gateway proxy Lambda. API Gateway's Cognito authorizer authenticates; this enforces role + ownership. */
 export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {

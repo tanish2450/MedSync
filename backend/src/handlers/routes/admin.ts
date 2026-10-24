@@ -13,7 +13,7 @@ const isDate = (s: unknown) => typeof s === "string" && /^\d{4}-\d{2}-\d{2}$/.te
 
 export const adminRoutes: Route[] = [
   {
-    method: "GET", path: "/me", roles: ["admin_nurse", "doctor", "patient", "caregiver", "pharmacy"],
+    method: "GET", path: "/me", roles: ["admin_nurse", "doctor", "patient", "caregiver", "pharmacy", "lab"],
     async handler({ caller }) {
       const profile = caller.role === "patient" ? await getItem("Patients", { id: caller.sub })
         : caller.role === "doctor" ? await getItem("Doctors", { id: caller.sub }) : null;
@@ -21,7 +21,7 @@ export const adminRoutes: Route[] = [
     },
   },
   {
-    method: "GET", path: "/drugs", roles: ["admin_nurse", "doctor", "patient", "caregiver", "pharmacy"],
+    method: "GET", path: "/drugs", roles: ["admin_nurse", "doctor", "patient", "caregiver", "pharmacy", "lab"],
     async handler({ query: q }) {
       const term = (q.q ?? "").toLowerCase().trim();
       const all = await catalogue();
@@ -66,7 +66,7 @@ export const adminRoutes: Route[] = [
   },
   // ---- Pharmacies ----
   {
-    method: "GET", path: "/pharmacies", roles: ["admin_nurse", "doctor", "patient", "caregiver", "pharmacy"],
+    method: "GET", path: "/pharmacies", roles: ["admin_nurse", "doctor", "patient", "caregiver", "pharmacy", "lab"],
     handler: async () => (await scan<any>("Pharmacies")).sort((a, b) => a.name.localeCompare(b.name)),
   },
   {

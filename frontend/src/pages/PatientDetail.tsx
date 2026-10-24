@@ -7,6 +7,7 @@ import { HistoryCard } from "./HistoryCard";
 import { AllergyEditor } from "./AllergyEditor";
 import { DiscontinueDialog, ModifyDialog, Prescribe } from "./Prescribe";
 import { MessagePatientButton } from "./Chat";
+import { LabReportsCard } from "./Labs";
 
 export function PatientDetail() {
   const { id } = useParams(); const { me } = useAuth();
@@ -26,6 +27,7 @@ export function PatientDetail() {
       <p className="muted">{[p.gender, p.dob && `DOB ${p.dob}`, p.bloodGroup && `Blood group ${p.bloodGroup}`, p.phone].filter(Boolean).join(" · ")}</p>
       {!isDoctor && <div className="muted">Read-only clinical view{isAdmin ? ": Admin/Nurse accounts cannot change diagnoses or medicines." : "."}</div>}
 
+      <LabReportsCard patientId={p.id} patientName={p.name} canOrder={isDoctor} />
       <div className="grid gap">
         {me?.role === "patient" || me?.role === "caregiver"
           ? <AllergyEditor patientId={p.id} allergies={p.allergies ?? []} onSaved={rec.reload} />

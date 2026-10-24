@@ -16,13 +16,15 @@ import { PatientHome, FindDoctors, DoctorProfile, Health, Caregivers, CaregiverH
 import { PatientDetail } from "./pages/PatientDetail";
 import { AppointmentsPage } from "./pages/Appointments";
 import { MessagesPage } from "./pages/Chat";
+import { AdminLabs, DoctorLabs, LabBoard, PatientLabs } from "./pages/Labs";
 
 const NAV: Record<Role, [string, string][]> = {
-  admin_nurse: [["/", "Overview"], ["/patients", "Patients"], ["/doctors", "Doctors"], ["/appointments", "Appointments"], ["/messages", "Messages"], ["/confirmations", "Confirmations"], ["/pharmacies", "Pharmacies"]],
-  doctor: [["/patients", "My patients"], ["/messages", "Messages"], ["/scans", "Prescription uploads"], ["/appointments", "Appointments"], ["/availability", "Availability"]],
-  patient: [["/", "Home"], ["/messages", "Messages"], ["/find", "Find a doctor"], ["/health", "My health"], ["/appointments", "Appointments"], ["/caregivers", "Caregivers"], ["/prescriptions", "Upload prescription"], ["/orders", "Order medicines"]],
+  admin_nurse: [["/", "Overview"], ["/patients", "Patients"], ["/doctors", "Doctors"], ["/appointments", "Appointments"], ["/messages", "Messages"], ["/confirmations", "Confirmations"], ["/pharmacies", "Pharmacies"], ["/labs", "Labs"]],
+  doctor: [["/patients", "My patients"], ["/messages", "Messages"], ["/labs", "Lab orders"], ["/scans", "Prescription uploads"], ["/appointments", "Appointments"], ["/availability", "Availability"]],
+  patient: [["/", "Home"], ["/messages", "Messages"], ["/find", "Find a doctor"], ["/health", "My health"], ["/labs", "Lab reports"], ["/appointments", "Appointments"], ["/caregivers", "Caregivers"], ["/prescriptions", "Upload prescription"], ["/orders", "Order medicines"]],
   caregiver: [["/", "Linked patients"], ["/orders", "Order medicines"]],
   pharmacy: [["/", "Orders"]],
+  lab: [["/", "Lab orders"]],
 };
 const TOP: Role[] = ["patient", "caregiver"];
 
@@ -56,9 +58,13 @@ export default function App() {
       {role === "patient" && <><Route path="/" element={<PatientHome />} /><Route path="/find" element={<FindDoctors />} /><Route path="/doctor/:id" element={<DoctorProfile />} /><Route path="/health" element={<Health />} /><Route path="/caregivers" element={<Caregivers />} /></>}
       {role === "caregiver" && <Route path="/" element={<CaregiverHome />} />}
       {role === "pharmacy" && <Route path="/" element={<PharmacyOrders />} />}
+      {role === "lab" && <Route path="/" element={<LabBoard />} />}
+      {role === "patient" && <Route path="/labs" element={<PatientLabs />} />}
+      {role === "doctor" && <Route path="/labs" element={<DoctorLabs />} />}
+      {role === "admin_nurse" && <Route path="/labs" element={<AdminLabs />} />}
       {["admin_nurse", "doctor", "patient"].includes(role) && <Route path="/appointments" element={<AppointmentsPage />} />}
       {["admin_nurse", "doctor", "patient"].includes(role) && <Route path="/messages" element={<MessagesPage />} />}
-      {role !== "pharmacy" && <Route path="/patient/:id" element={<PatientDetail />} />}
+      {role !== "pharmacy" && role !== "lab" && <Route path="/patient/:id" element={<PatientDetail />} />}
       <Route path="/profile" element={<Profile />} />
       {(role === "patient" || role === "caregiver") && <Route path="/orders" element={<OrdersPage />} />}
       {role === "patient" && <Route path="/prescriptions" element={<PrescriptionUpload />} />}

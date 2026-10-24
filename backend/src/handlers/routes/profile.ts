@@ -23,7 +23,7 @@ const NURSE_TYPES = ["Visit note", "Nursing note"];
 
 export const profileRoutes: Route[] = [
   {
-    method: "GET", path: "/profile", roles: ["admin_nurse", "doctor", "patient", "caregiver", "pharmacy"],
+    method: "GET", path: "/profile", roles: ["admin_nurse", "doctor", "patient", "caregiver", "pharmacy", "lab"],
     async handler({ caller }) {
       const user = await getItem<any>("Users", { id: caller.sub });
       let record: any = null; let pharmacy: any = null;
@@ -34,7 +34,7 @@ export const profileRoutes: Route[] = [
     },
   },
   {
-    method: "PUT", path: "/profile", roles: ["admin_nurse", "doctor", "patient", "caregiver", "pharmacy"],
+    method: "PUT", path: "/profile", roles: ["admin_nurse", "doctor", "patient", "caregiver", "pharmacy", "lab"],
     async handler({ caller, body }) {
       const rules = SELF[caller.role];
       const userPatch = pick(body, rules.users);

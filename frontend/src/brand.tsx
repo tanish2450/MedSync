@@ -33,6 +33,7 @@ const P: Record<string, ReactNode> = {
   text: <path d="M4 19L9 5l5 14M6 14h6M16 19v-7M16 12c0-2 4-2 4 0v7" />,
   out: <><path d="M10 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h5M15 8l4 4-4 4M19 12H9" /></>,
   pin: <><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z" /><circle cx="12" cy="9.5" r="2.5" /></>,
+  flask: <><path d="M9 3h6M10 3v6l-5.5 9.5A2 2 0 0 0 6.2 21h11.6a2 2 0 0 0 1.7-2.5L14 9V3" /><path d="M7.5 15h9" /></>,
   chat: <><path d="M4 5h16v11H9l-5 4z" /><path d="M8 9.5h8M8 12.5h5" /></>,
   alert: <><path d="M12 3l9.5 17h-19z" /><path d="M12 10v4.5M12 17.5v.5" /></>,
 };
@@ -41,9 +42,9 @@ export const Icon = ({ n }: { n: IconName }) => <svg className="ic" viewBox="0 0
 
 export const NAV_ICON: Record<string, IconName> = {
   "/": "home", "/find": "search", "/health": "heart", "/appointments": "calendar", "/caregivers": "users", "/prescriptions": "upload", "/orders": "bag",
-  "/patients": "users", "/scans": "scan", "/availability": "clock", "/doctors": "user", "/confirmations": "check", "/pharmacies": "bag", "/messages": "chat",
+  "/patients": "users", "/scans": "scan", "/availability": "clock", "/doctors": "user", "/confirmations": "check", "/pharmacies": "bag", "/messages": "chat", "/labs": "flask",
 };
-export const navIcon = (path: string, role: string): IconName => (role === "caregiver" && path === "/" ? "heart" : role === "pharmacy" && path === "/" ? "truck" : NAV_ICON[path] ?? "home");
+export const navIcon = (path: string, role: string): IconName => (role === "caregiver" && path === "/" ? "heart" : role === "pharmacy" && path === "/" ? "truck" : role === "lab" && path === "/" ? "flask" : NAV_ICON[path] ?? "home");
 
 /** Light / dark theme, remembered per browser. Light is the default. */
 export function useTheme() {

@@ -14,7 +14,7 @@ const withFlag = (t: ConfirmationTask) => ({
 
 export const notificationRoutes: Route[] = [
   {
-    method: "GET", path: "/notifications", roles: ["admin_nurse", "doctor", "patient", "caregiver", "pharmacy"],
+    method: "GET", path: "/notifications", roles: ["admin_nurse", "doctor", "patient", "caregiver", "pharmacy", "lab"],
     async handler({ caller }) {
       const rows = await query<any>("Notifications", { pk: "userId", pkValue: caller.sub, forward: false, limit: 60 });
       const items = rows.filter((r) => !String(r.id).startsWith("!dedupe#")).slice(0, 40);
@@ -22,7 +22,7 @@ export const notificationRoutes: Route[] = [
     },
   },
   {
-    method: "POST", path: "/notifications/read-all", roles: ["admin_nurse", "doctor", "patient", "caregiver", "pharmacy"],
+    method: "POST", path: "/notifications/read-all", roles: ["admin_nurse", "doctor", "patient", "caregiver", "pharmacy", "lab"],
     async handler({ caller }) {
       const rows = (await query<any>("Notifications", { pk: "userId", pkValue: caller.sub, forward: false, limit: 60 })).filter((r) => !String(r.id).startsWith("!dedupe#") && !r.readAt);
       const readAt = nowIso();

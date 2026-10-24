@@ -2,8 +2,8 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import { AuthenticationDetails, CognitoUser, CognitoUserAttribute, CognitoUserPool, type CognitoUserSession } from "amazon-cognito-identity-js";
 import { config } from "./config";
 
-export type Role = "admin_nurse" | "doctor" | "patient" | "caregiver" | "pharmacy";
-const ROLE_LIST: Role[] = ["admin_nurse", "doctor", "patient", "caregiver", "pharmacy"];
+export type Role = "admin_nurse" | "doctor" | "patient" | "caregiver" | "pharmacy" | "lab";
+const ROLE_LIST: Role[] = ["admin_nurse", "doctor", "patient", "caregiver", "pharmacy", "lab"];
 /** role is null for a brand-new self sign-up (email or Google) that has not finished its profile yet. */
 export interface Me { sub: string; email: string; name: string; role: Role | null }
 

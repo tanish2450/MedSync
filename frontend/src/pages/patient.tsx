@@ -5,6 +5,7 @@ import { del, get, post } from "../api";
 import { useAuth } from "../auth";
 import { AdherencePanel, Avatar, Badge, DoctorCard, DoseChecklist, Empty, ErrorBox, Skeleton, downloadIcs, fmtDate, fmtDateTime, fmtDay, fmtTime, useLoad, type DocT } from "../components";
 import { SlotPicker } from "./Appointments";
+import { LabReportsCard } from "./Labs";
 import { EmergencyToggle } from "./Chat";
 import { SpecialtyTiles } from "../specialties";
 import { CaregiverCare, DoctorBook, DoctorPatient, DoctorReviews, IlloEmpty, PageBanner, PatientMeds } from "../illustrations";
@@ -190,6 +191,7 @@ export function CaregiverHome() {
       {!!pts.data?.length && <>
         <div className="field" style={{ maxWidth: 320 }}><label>Patient</label><select value={active} onChange={(e) => setSel(e.target.value)}>{pts.data.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}</select></div>
         <div className="grid gap"><div className="card"><h2>Today</h2><DoseChecklist patientId={active} canMark /></div><div className="card"><h2>Adherence</h2><AdherencePanel patientId={active} /></div></div>
+        <LabReportsCard patientId={active} patientName={pts.data?.find((p) => p.id === active)?.name ?? "Patient"} />
         <p><Link to={`/patient/${active}`}>Medicines, allergies and full history →</Link></p></>}
     </div>
   );

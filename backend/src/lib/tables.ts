@@ -33,6 +33,9 @@ export const TABLES = {
   // Medicine orders from patients/caregivers to pharmacies
   Orders: { key: "Orders", pk: "id", gsis: [{ name: "byPatient", pk: "patientId", sk: "createdAt" }, { name: "byPharmacy", pk: "pharmacyId", sk: "createdAt" }] },
   Notifications: { key: "Notifications", pk: "userId", sk: "id" },
+  // Diagnostic labs registered on the platform, and doctor-ordered lab tests with their results
+  Labs: { key: "Labs", pk: "id" },
+  LabOrders: { key: "LabOrders", pk: "id", gsis: [{ name: "byPatient", pk: "patientId", sk: "createdAt" }, { name: "byDoctor", pk: "doctorId", sk: "createdAt" }, { name: "byLab", pk: "labId", sk: "createdAt" }] },
   // Patient <-> doctor / nurse-desk conversations: id=`${patientId}~${doctorId|"nurses"}`; emergency threads sort first
   ChatThreads: { key: "ChatThreads", pk: "id", gsis: [{ name: "byPatient", pk: "patientId", sk: "lastAt" }, { name: "byStaff", pk: "staffKey", sk: "lastAt" }] },
   ChatMessages: { key: "ChatMessages", pk: "threadId", sk: "msgKey" },

@@ -3,7 +3,7 @@ import { get, put } from "../api";
 import { useAuth } from "../auth";
 import { Avatar, Badge, ErrorBox, fmtDate, useLoad } from "../components";
 
-const ROLE_LABEL: Record<string, string> = { patient: "Patient", doctor: "Doctor", pharmacy: "Pharmacy staff", caregiver: "Caregiver", admin_nurse: "Admin / Nurse" };
+const ROLE_LABEL: Record<string, string> = { patient: "Patient", doctor: "Doctor", pharmacy: "Pharmacy staff", lab: "Lab staff", caregiver: "Caregiver", admin_nurse: "Admin / Nurse" };
 const Row = ({ k, v }: { k: string; v?: React.ReactNode }) => (v === undefined || v === null || v === "" ? null : <div className="prow"><span className="muted">{k}</span><span>{v}</span></div>);
 const age = (dob?: string) => { if (!dob) return ""; const d = new Date(dob), n = new Date(); let a = n.getFullYear() - d.getFullYear(); if (n < new Date(n.getFullYear(), d.getMonth(), d.getDate())) a--; return `${a} years`; };
 

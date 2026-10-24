@@ -8,6 +8,7 @@ import { nowIso } from "../lib/services.js";
 import {
   SIGNUP_ROLES, validateCaregiver, validateDoctor, validatePatient, validatePharmacy, type SignupRole,
 } from "../domain/signup.js";
+import { validateLab } from "../domain/labs.js";
 
 const DEFAULT_HOURS = Object.fromEntries(["mon", "tue", "wed", "thu", "fri", "sat"].map((d) => [d, [{ start: "09:00", end: "13:00" }, { start: "14:00", end: "17:00" }]]));
 
@@ -58,6 +59,16 @@ export async function signupComplete(event: APIGatewayProxyEvent, body: any) {
       staffIds: [sub], active: true, verified: false, createdAt: now,
     });
     cleanup = () => deleteItem("Pharmacies", { id: pharmacyId });
+  } else if (role === "lab") {
+    const v = validateLab(body); name = v.staffName;
+    const labId = randomUUID();
+    user = { id: sub, role, name, email, phone: v.phone, language: "en", status: "active", labId, createdAt: now, signup: "self" };
+    extra = () => putItem("Labs", {
+      id: labId, name: v.labName, address: `${v.address}, ${v.city}`, city: v.city, lat: v.lat, lng: v.lng, hours: v.hours, phone: v.labPhone,
+      licenceNo: v.licenceNo, accreditation: v.accreditation, tests: v.tests, homeCollection: v.homeCollection,
+      staffIds: [sub], active: true, verified: false, createdAt: now,
+    });
+    cleanup = () => deleteItem("Labs", { id: labId });
   } else {
     const v = validateCaregiver(body); name = v.name;
     user = { id: sub, role, name, email, phone: v.phone, language: v.language, status: "active", createdAt: now, signup: "self" };
@@ -69,12 +80,12 @@ export async function signupComplete(event: APIGatewayProxyEvent, body: any) {
   try {
     await extra?.();
     await addUserToGroup(email, role);
-    await audit({ actor: sub, actorRole: role, action: "signup.complete", entity: `${role}#${sub}`, after: { role, name }, meta: { verified: role === "doctor" || role === "pharmacy" ? false : undefined } });
+    await audit({ actor: sub, actorRole: role, action: "signup.complete", entity: `${role}#${sub}`, after: { role, name }, meta: { verified: role === "doctor" || role === "pharmacy" || role === "lab" ? false : undefined } });
   } catch (e) {
     await cleanup?.().catch(() => undefined);
     await deleteItem("Users", { id: sub }).catch(() => undefined);
     throw e;
   }
-  return { role, name, verified: role === "doctor" || role === "pharmacy" ? false : true };
+  return { role, name, verified: role === "doctor" || role === "pharmacy" || role === "lab" ? false : true };
 }
 

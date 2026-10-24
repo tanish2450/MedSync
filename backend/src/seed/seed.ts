@@ -186,6 +186,21 @@ async function main() {
     await putItem("Pharmacies", { id, name, address, lat, lng, hours: "08:00-22:00", phone: "+91 80000 00000", staffIds, active: true, createdAt: now });
   }
 
+  // Diagnostic labs; the first one gets a demo staff login
+  const labs = [
+    ["Indiranagar Diagnostics (demo)", "100 Feet Road, Indiranagar, Bengaluru", 12.9784, 77.6408, true],
+    ["Jayanagar Path Labs (demo)", "11th Main, Jayanagar 4th Block, Bengaluru", 12.9282, 77.5826, false],
+  ] as const;
+  const ALL_TESTS = ["CBC", "FBS", "HBA1C", "LIPID", "KFT", "LFT", "TFT", "INR", "VITD", "URINE"];
+  for (const [i, [name, address, lat, lng, home]] of labs.entries()) {
+    const id = randomUUID(); const staffIds: string[] = [];
+    if (i === 0) {
+      const sid = await ensureUser(email("lab.demo"), "Lab staff", "lab"); staffIds.push(sid);
+      await putItem("Users", { id: sid, role: "lab", name: "Lab staff", email: email("lab.demo"), language: "en", status: "active", labId: id });
+    }
+    await putItem("Labs", { id, name, address, lat, lng, hours: "07:00-21:00", phone: "+91 80000 11111", tests: ALL_TESTS, homeCollection: home, staffIds, active: true, verified: true, createdAt: now });
+  }
+
   console.log(`\nSeed complete. Log in with any of these (password = your SEED_PASSWORD):\n  ${email("nurse.demo")} (admin/nurse)\n  ${email("dr.rao")}, ${email("dr.shetty")}, ... (doctors)\n  ${email("pt.ramesh")}, ${email("pt.lakshmi")}, ... (patients)\n  ${email("cg.ramesh")} (caregiver)  ${email("pharmacy.demo")} (pharmacy)`);
   console.log(`\nDemo 1: as ${email("dr.shetty")} open Ramesh Iyer (on warfarin from Dr. Rao) and prescribe ibuprofen or aspirin -> Major interaction alert.`);
 }

@@ -13,7 +13,7 @@ import { TABLES, tableEnvVar } from "../../backend/src/lib/tables.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, "../..");
-const ROLES = ["admin_nurse", "doctor", "patient", "caregiver", "pharmacy"];
+const ROLES = ["admin_nurse", "doctor", "patient", "caregiver", "pharmacy", "lab"];
 
 export class MedSyncStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: cdk.StackProps) {
