@@ -15,7 +15,13 @@ export interface LabOrderT {
   priority: "Routine" | "Urgent"; fasting: boolean; clinicalNotes?: string; labId?: string; labName?: string; collection?: string; address?: string;
   status: "Ordered" | "Sample collected" | "Processing" | "Report ready" | "Cancelled"; history: { status: string; at: string; by: string }[];
   results?: ResultT[]; reportNote?: string; reportedAt?: string; reportedBy?: string; abnormal?: number; critical?: number; hasAttachment?: boolean; cancelReason?: string; createdAt: string;
+  /** Present only for doctors. */
+  aiReview?: AiReviewT;
 }
+type Urgency = "Immediate" | "Soon" | "Routine";
+type AiReviewT =
+  | { status: "ready"; summary: string; findings: { finding: string; significance: string }[]; suggestions: { action: string; rationale: string; urgency: Urgency }[]; followUpTests: string[]; cautions: string[]; model: string; generatedAt: string }
+  | { status: "unavailable"; reason: string; generatedAt: string };
 const STEPS = ["Ordered", "Sample collected", "Processing", "Report ready"] as const;
 const km = (a: [number, number], b: [number, number]) => {
   const r = (d: number) => (d * Math.PI) / 180; const dLat = r(b[0] - a[0]), dLng = r(b[1] - a[1]);
@@ -60,9 +66,38 @@ export function ResultsTable({ o }: { o: LabOrderT }) {
   );
 }
 
+const URGENCY_FLAG: Record<Urgency, string> = { Immediate: "Critical-high", Soon: "High", Routine: "Normal" };
+
+/** Doctor only: Groq's suggestions on a finished report. Advisory; prescribing still goes through the safety checks. */
+function AiReview({ o }: { o: LabOrderT }) {
+  const [r, setR] = useState<AiReviewT | undefined>(o.aiReview); const [busy, setBusy] = useState(false); const [err, setErr] = useState<unknown>(null);
+  const run = async () => { setBusy(true); setErr(null); try { setR((await post<LabOrderT>(`/lab-orders/${o.id}/ai-review`)).aiReview); } catch (x) { setErr(x); } finally { setBusy(false); } };
+  return (
+    <div className="ai-review">
+      <div className="row" style={{ alignItems: "center" }}>
+        <div className="grow"><b>AI suggestions</b> <span className="muted">· for your review, not shown to the patient</span></div>
+        <button className="sm" disabled={busy} onClick={run}>{busy ? "Thinking…" : !r ? "Get suggestions" : r.status === "ready" ? "Regenerate" : "Retry"}</button>
+      </div>
+      <ErrorBox e={err} />
+      {!r && !busy && <p className="muted">No suggestions yet.</p>}
+      {r?.status === "unavailable" && <p className="muted">{r.reason}</p>}
+      {r?.status === "ready" && <>
+        {r.cautions.map((c, i) => <div key={i} className="warn">{c}</div>)}
+        <p>{r.summary}</p>
+        {r.findings.length > 0 && <><div className="lr-test">Findings</div><ul>{r.findings.map((f, i) => <li key={i}><b>{f.finding}</b>{f.significance ? ` — ${f.significance}` : ""}</li>)}</ul></>}
+        {r.suggestions.length > 0 && <><div className="lr-test">Suggested next steps</div><ul className="ai-steps">{r.suggestions.map((s, i) => (
+          <li key={i}><span className={`flag f-${URGENCY_FLAG[s.urgency]}`}>{s.urgency}</span> <b>{s.action}</b>{s.rationale ? <div className="muted">{s.rationale}</div> : null}</li>))}</ul></>}
+        {r.followUpTests.length > 0 && <p><b>Tests to consider:</b> {r.followUpTests.join(", ")}</p>}
+        <p className="disclaimer">AI-generated from this report, the patient's conditions, allergies and current medicines (no name or contact details are sent). It can be wrong: check it against your own judgement. Any medicine you prescribe still goes through MedSync's interaction and allergy checks. Generated {fmtDateTime(r.generatedAt)}.</p>
+        <Link to={`/patient/${o.patientId}`}><button className="primary sm">Open patient record to act</button></Link>
+      </>}
+    </div>
+  );
+}
+
 /** One lab order: what was ordered, where it is, and the report when ready. */
 export function LabOrderCard({ o, who = "doctor", actions, open }: { o: LabOrderT; who?: "patient" | "doctor" | "both"; actions?: React.ReactNode; open?: boolean }) {
-  const ready = o.status === "Report ready";
+  const ready = o.status === "Report ready"; const { me } = useAuth();
   return (
     <details className={`labcard${o.priority === "Urgent" && !ready ? " urgent" : ""}${o.critical ? " critical" : ""}`} open={open}>
       <summary>
@@ -80,6 +115,7 @@ export function LabOrderCard({ o, who = "doctor", actions, open }: { o: LabOrder
         {o.clinicalNotes && <p className="muted"><b>Doctor&apos;s note:</b> {o.clinicalNotes}</p>}
         {o.collection && <p className="muted">{o.collection}{o.address ? ` · ${o.address}` : ""}</p>}
         {ready && <ResultsTable o={o} />}
+        {ready && me?.role === "doctor" && <AiReview o={o} />}
         {actions && <div className="row gap">{actions}</div>}
       </div>
     </details>

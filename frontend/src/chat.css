@@ -185,3 +185,8 @@ fieldset.resfs { border: 1px solid var(--line); border-radius: 12px; padding: 10
 .resrow input { min-height: 38px; padding: 7px 10px } .resrow .rn { font-size: 14px }
 @media (max-width: 640px) { .resrow { grid-template-columns: 1fr 1fr } }
 .lab-results table { table-layout: fixed } .lab-results th:first-child { width: 34% }
+
+/* AI suggestions on a lab report (doctor only) */
+.ai-review { margin-top: 14px; padding: 14px 16px; border: 1px dashed var(--line-2); border-radius: 12px; background: var(--surface-2) }
+.ai-review ul { margin: 4px 0 10px; padding-left: 18px } .ai-review li { margin: 6px 0 }
+.ai-steps { list-style: none; padding-left: 0 !important } .ai-steps .flag { margin-right: 6px }

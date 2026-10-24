@@ -6,13 +6,16 @@ import { getItem, putItem, query, scan, updateItem } from "../../lib/db.js";
 import { audit } from "../../lib/audit.js";
 import { notify } from "../../lib/notify.js";
 import { createCognitoUser } from "../../lib/cognito.js";
-import { assertCanViewPatient, loadPatient, nowIso } from "../../lib/services.js";
+import { assertCanViewPatient, loadActiveMeds, loadPatient, nowIso } from "../../lib/services.js";
+import { reviewLabReport, TEXT_MODEL } from "../../lib/groq.js";
+import { parseModelJson } from "../../domain/scan.js";
+import { LAB_AI_SYSTEM, ageFrom, labAiPrompt, sanitizeLabAi, type LabAiOutcome } from "../../domain/labAi.js";
 import { imageKind } from "../../domain/scan.js";
 import {
   LAB_TESTS, buildResults, canCancelLab, canChooseLab, canEnterResults, isCritical, labNext, testByCode,
   type LabStatus, type ResultRow,
 } from "../../domain/labs.js";
-import type { Doctor } from "../../lib/types.js";
+import type { Doctor, Role } from "../../lib/types.js";
 
 const s3 = new S3Client({});
 const BUCKET = () => { const b = process.env.ASSETS_BUCKET; if (!b) throw new Error("ASSETS_BUCKET not set"); return b; };
@@ -29,8 +32,13 @@ export interface LabOrder {
   status: LabStatus; history: { status: LabStatus; at: string; by: string }[];
   results?: ResultRow[]; reportNote?: string; reportedAt?: string; reportedBy?: string; abnormal?: number; critical?: number;
   attachmentKey?: string; attachmentMime?: string; cancelReason?: string; createdAt: string; updatedAt: string;
+  /** AI suggestions for the doctor; stripped for every other role. */
+  aiReview?: LabAiOutcome;
 }
-const publicOrder = (o: LabOrder) => { const { attachmentKey, ...rest } = o; return { ...rest, hasAttachment: !!attachmentKey }; };
+const publicOrder = (o: LabOrder, role?: Role) => {
+  const { attachmentKey, aiReview, ...rest } = o;
+  return { ...rest, hasAttachment: !!attachmentKey, ...(role === "doctor" && aiReview ? { aiReview } : {}) };
+};
 
 async function labOf(caller: Caller): Promise<string> {
   const u = await getItem<{ labId?: string }>("Users", { id: caller.sub });
@@ -53,6 +61,26 @@ async function move(o: LabOrder, to: LabStatus, caller: Caller, extra: Partial<L
     { expr: "#st = :from", names: { "#st": "status" }, values: { ":from": o.status } });
   await audit({ actor: caller.sub, actorRole: caller.role, action: `lab.${to.toLowerCase().replace(/\s/g, "_")}`, entity: `patient#${o.patientId}`, before: { status: o.status }, after: { status: to, orderId: o.id } });
   return { ...o, ...extra, status: to, updatedAt: at };
+}
+
+const AI_UNAVAILABLE = { not_configured: "AI suggestions are not set up", rate_limited: "The AI service is busy. Try again in a minute.", failed: "AI suggestions are unavailable right now" };
+/** Asks Groq for decision support on a reported order and stores it on the order. Only de-identified data is sent. */
+async function runAiReview(o: LabOrder, caller: Caller): Promise<LabAiOutcome> {
+  const results = o.results ?? [];
+  const [patient, meds] = await Promise.all([loadPatient(o.patientId), loadActiveMeds(o.patientId)]);
+  const prompt = labAiPrompt({
+    age: ageFrom(patient.dob, new Date()), sex: patient.gender ?? null, conditions: patient.conditions ?? [], allergies: patient.allergies ?? [],
+    medicines: meds.map((m) => ({ name: m.drugName, strength: m.strength, dose: m.dose, frequency: m.frequency })),
+    tests: o.tests.map((t) => t.name), results, priority: o.priority, clinicalNotes: o.clinicalNotes, labNote: o.reportNote,
+  });
+  const r = await reviewLabReport(LAB_AI_SYSTEM, prompt);
+  const at = nowIso();
+  const out: LabAiOutcome = r.ok
+    ? sanitizeLabAi(parseModelJson(r.text), results, TEXT_MODEL(), at) ?? { status: "unavailable", reason: "The AI reply could not be read. Try again.", generatedAt: at }
+    : { status: "unavailable", reason: AI_UNAVAILABLE[r.reason], generatedAt: at };
+  await updateItem("LabOrders", { id: o.id }, { aiReview: out });
+  await audit({ actor: caller.sub, actorRole: caller.role, action: "lab.ai_review", entity: `patient#${o.patientId}`, after: { orderId: o.id, status: out.status, model: TEXT_MODEL() } });
+  return out;
 }
 
 export const labRoutes: Route[] = [
@@ -136,19 +164,19 @@ export const labRoutes: Route[] = [
       else if (caller.role === "patient") list = await query<LabOrder>("LabOrders", { index: "byPatient", pk: "patientId", pkValue: caller.sub, forward: false });
       else list = (await scan<LabOrder>("LabOrders")).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
       // urgent first, then newest
-      return list.sort((a, b) => Number(b.priority === "Urgent" && b.status !== "Report ready") - Number(a.priority === "Urgent" && a.status !== "Report ready") || b.createdAt.localeCompare(a.createdAt)).map(publicOrder);
+      return list.sort((a, b) => Number(b.priority === "Urgent" && b.status !== "Report ready") - Number(a.priority === "Urgent" && a.status !== "Report ready") || b.createdAt.localeCompare(a.createdAt)).map((o) => publicOrder(o, caller.role));
     },
   },
   {
     method: "GET", path: "/patients/:id/lab-orders", roles: ["admin_nurse", "doctor", "patient", "caregiver"],
     async handler({ caller, params }) {
       await assertCanViewPatient(caller, await loadPatient(params.id));
-      return (await query<LabOrder>("LabOrders", { index: "byPatient", pk: "patientId", pkValue: params.id, forward: false })).map(publicOrder);
+      return (await query<LabOrder>("LabOrders", { index: "byPatient", pk: "patientId", pkValue: params.id, forward: false })).map((o) => publicOrder(o, caller.role));
     },
   },
   {
     method: "GET", path: "/lab-orders/:id", roles: ["admin_nurse", "doctor", "patient", "caregiver", "lab"],
-    async handler({ caller, params }) { const o = await loadOrder(params.id); await assertParty(caller, o); return publicOrder(o); },
+    async handler({ caller, params }) { const o = await loadOrder(params.id); await assertParty(caller, o); return publicOrder(o, caller.role); },
   },
   {
     // patient (or linked caregiver) picks where to get it done
@@ -194,7 +222,19 @@ export const labRoutes: Route[] = [
       const summary = critical ? `${critical} critical value${critical > 1 ? "s" : ""}` : abnormal ? `${abnormal} value${abnormal > 1 ? "s" : ""} outside the normal range` : "all values in range";
       await notify({ userId: o.patientId, type: "lab.ready", title: "Your lab report is ready", body: `${o.tests.map((t) => t.name).join(", ")}: ${summary}. Your doctor has been notified.`, payload: { link: "/labs" } });
       await notify({ userId: o.doctorId, type: critical ? "lab.critical" : "lab.ready", title: `${critical ? "🚨 CRITICAL lab result" : "Lab report ready"}: ${o.patientName}`, body: summary, sms: critical ? `MedSync: CRITICAL lab result for ${o.patientName}. Open MedSync now.` : undefined, payload: { link: `/patient/${o.patientId}` } });
+      // after the alerts, so a critical result never waits on the AI; a failure leaves the doctor a Retry button
+      await runAiReview(out, caller).catch((e) => console.error("lab AI review failed", (e as Error).name));
       return publicOrder(out);
+    },
+  },
+  {
+    // the doctor asks for (or refreshes) AI suggestions on a finished report
+    method: "POST", path: "/lab-orders/:id/ai-review", roles: ["doctor"],
+    async handler({ caller, params }) {
+      const o = await loadOrder(params.id); await assertParty(caller, o);
+      if (o.status !== "Report ready" || !o.results?.length) throw badRequest("AI suggestions are available once the report is ready");
+      const aiReview = await runAiReview(o, caller);
+      return publicOrder({ ...o, aiReview }, caller.role);
     },
   },
   {
